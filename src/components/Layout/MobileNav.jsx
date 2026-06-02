@@ -16,19 +16,15 @@ import { useAuth } from '../../context/AuthContext';
 
 const ogrenciItems = [
   { icon: LayoutDashboard, label: 'Panel', path: '/' },
-  { icon: Binary, label: 'Çözücü', path: '/solver' },
   { icon: BookOpen, label: 'Dersler', path: '/lessons' },
   { icon: Sword, label: 'Alıştırmalar', path: '/practice' },
-  { icon: BarChart3, label: 'Analitik', path: '/analytics' },
   { icon: User, label: 'Profil', path: '/profile' },
 ];
 
 const ogretmenItems = [
   { icon: LayoutDashboard, label: 'Panel', path: '/' },
-  { icon: PlusSquare, label: 'Soru Ol.', path: '/question-builder' },
-  { icon: FileText, label: 'Ders Ol.', path: '/lesson-builder' },
-  { icon: HelpCircle, label: 'Quiz Ol.', path: '/quiz-builder' },
-  { icon: Users, label: 'Analiz', path: '/student-analytics' },
+  { icon: BookOpen, label: 'Eğitim', path: '/lesson-builder' },
+  { icon: BarChart3, label: 'Analiz', path: '/student-analytics' },
   { icon: User, label: 'Profil', path: '/profile' },
 ];
 
@@ -54,11 +50,11 @@ const MobileNav = () => {
       
       {!isTeacher ? (
         <NavLink to="/solver" className="fab-solver" title="AI Çözücü">
-          <Binary size={28} />
+          <Binary size={22} className="fab-solver-icon" />
         </NavLink>
       ) : (
         <NavLink to="/question-builder" className="fab-solver" title="Soru Oluştur" style={{ background: 'linear-gradient(135deg, #10b981, #06b6d4)' }}>
-          <PlusSquare size={28} />
+          <PlusSquare size={22} className="fab-solver-icon" />
         </NavLink>
       )}
     </>

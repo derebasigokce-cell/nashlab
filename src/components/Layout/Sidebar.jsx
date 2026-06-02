@@ -34,7 +34,7 @@ const ogretmenItems = [
   { icon: User, label: 'Profil', path: '/profile' },
 ];
 
-const Sidebar = ({ collapsed, setCollapsed }) => {
+const Sidebar = ({ collapsed, setCollapsed, onItemClick }) => {
   const { user } = useAuth();
   const sidebarItems = user?.role === 'ogretmen' ? ogretmenItems : ogrenciItems;
 
@@ -101,6 +101,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
             to={item.path}
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             title={collapsed ? item.label : ''}
+            onClick={() => onItemClick && onItemClick()}
           >
             <item.icon />
             {!collapsed && <span>{item.label}</span>}

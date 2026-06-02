@@ -10,11 +10,32 @@ const Layout = ({ children }) => {
 
   return (
     <div className={`app-container ${sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-open'}`}>
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar / Hamburger Menu */}
       <Sidebar 
         collapsed={sidebarCollapsed} 
         setCollapsed={setSidebarCollapsed} 
+        onItemClick={() => setMobileMenuOpen(false)}
       />
+
+      {/* Mobile Backdrop Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="mobile-sidebar-overlay"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(3, 7, 18, 0.4)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            zIndex: 55,
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        />
+      )}
 
       <div className="main-wrapper">
         <TopBar onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)} />
