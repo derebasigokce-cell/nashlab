@@ -14,10 +14,10 @@
 
 /* Desktop Sidebar Offset */
 @media (min-width: 1024px) {
-  .main-wrapper.sidebar-open {
+  .sidebar-open .main-wrapper {
     padding-left: var(--sidebar-width);
   }
-  .main-wrapper.sidebar-collapsed {
+  .sidebar-collapsed .main-wrapper {
     padding-left: var(--sidebar-collapsed-width);
   }
 }
@@ -42,15 +42,18 @@
 
 @media (max-width: 480px) {
   .content-area {
-    padding: 0.75rem;
+    padding: 0.75rem 0.75rem 0.75rem 1.5rem;
     padding-top: calc(var(--topbar-height) + 0.75rem);
     padding-bottom: calc(var(--mobile-nav-height) + 4.5rem) !important;
   }
 }
 
 /* Safety layout overrides to prevent horizontal scroll and overflow on small screens */
-.app-container, .main-wrapper, .content-area {
-  max-width: 100vw;
+.app-container, .main-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.content-area {
   overflow-x: hidden;
 }
 
