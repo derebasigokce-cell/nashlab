@@ -1,34 +1,55 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, Sword, BarChart3, Binary, User, PlusSquare } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Binary, 
+  BookOpen, 
+  Sword, 
+  BarChart3, 
+  User, 
+  PlusSquare, 
+  FileText, 
+  HelpCircle, 
+  Users 
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+
+const ogrenciItems = [
+  { icon: LayoutDashboard, label: 'Panel', path: '/' },
+  { icon: Binary, label: 'Çözücü', path: '/solver' },
+  { icon: BookOpen, label: 'Dersler', path: '/lessons' },
+  { icon: Sword, label: 'Alıştırmalar', path: '/practice' },
+  { icon: BarChart3, label: 'Analitik', path: '/analytics' },
+  { icon: User, label: 'Profil', path: '/profile' },
+];
+
+const ogretmenItems = [
+  { icon: LayoutDashboard, label: 'Panel', path: '/' },
+  { icon: PlusSquare, label: 'Soru Ol.', path: '/question-builder' },
+  { icon: FileText, label: 'Ders Ol.', path: '/lesson-builder' },
+  { icon: HelpCircle, label: 'Quiz Ol.', path: '/quiz-builder' },
+  { icon: Users, label: 'Analiz', path: '/student-analytics' },
+  { icon: User, label: 'Profil', path: '/profile' },
+];
 
 const MobileNav = () => {
   const { user } = useAuth();
   const isTeacher = user?.role === 'ogretmen';
+  const navItems = isTeacher ? ogretmenItems : ogrenciItems;
 
   return (
     <>
-      <nav className="mobile-nav">
-        <NavLink to="/" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
-          <LayoutDashboard size={20} />
-          <span>Panel</span>
-        </NavLink>
-        <NavLink to={isTeacher ? "/lesson-builder" : "/lessons"} className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
-          <BookOpen size={20} />
-          <span>{isTeacher ? 'Eğitim' : 'Dersler'}</span>
-        </NavLink>
-        
-        <div style={{ width: '20px' }}></div> {/* Spacer for FAB */}
-        
-        <NavLink to={isTeacher ? "/student-analytics" : "/practice"} className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
-          {isTeacher ? <BarChart3 size={20} /> : <Sword size={20} />}
-          <span>{isTeacher ? 'Analiz' : 'Alıştırma'}</span>
-        </NavLink>
-        <NavLink to="/profile" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
-          <User size={20} />
-          <span>Profil</span>
-        </NavLink>
+      <nav className="mobile-nav" style={{ gridTemplateColumns: `repeat(${navItems.length}, 1fr)` }}>
+        {navItems.map((item) => (
+          <NavLink 
+            key={item.path} 
+            to={item.path} 
+            className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}
+          >
+            <item.icon size={20} />
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
       </nav>
       
       {!isTeacher ? (
