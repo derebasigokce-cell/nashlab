@@ -18,7 +18,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     try {
-      const activeUserStr = localStorage.getItem('nashlab_active_user');
+      // Clean up stale legacy active user if it exists in localStorage
+      localStorage.removeItem('nashlab_active_user');
+
+      const activeUserStr = sessionStorage.getItem('nashlab_active_session');
       if (activeUserStr && activeUserStr !== 'undefined') {
         const userData = JSON.parse(activeUserStr);
         const normalizedRole = normalizeRole(userData.role);
@@ -45,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Persistence load failed:', error);
-      localStorage.removeItem('nashlab_active_user');
+      sessionStorage.removeItem('nashlab_active_session');
     } finally {
       setLoading(false);
     }
@@ -76,7 +79,7 @@ export const AuthProvider = ({ children }) => {
           email: user.email,
           role: user.role
         };
-        localStorage.setItem('nashlab_active_user', JSON.stringify(basicInfo));
+        sessionStorage.setItem('nashlab_active_session', JSON.stringify(basicInfo));
 
         // Sync local users list for login persistence
         const usersListStr = localStorage.getItem('nashlab_users');
@@ -113,7 +116,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     setUser(null);
-    localStorage.removeItem('nashlab_active_user');
+    sessionStorage.removeItem('nashlab_active_session');
   }, []);
 
   const updateProgression = useCallback((xpGain, lessonId = null, scenarioId = null, category = null) => {

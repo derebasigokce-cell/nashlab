@@ -58,7 +58,7 @@ const Auth = () => {
           throw new Error('Şifreler eşleşmiyor.');
         }
         if (allUsers.find(u => u.email.toLowerCase() === formData.email.toLowerCase())) {
-          throw new Error('Bu e-posta adresi zaten kayıtlı.');
+          throw new Error('Bu e-posta zaten kayıtlı. Lütfen giriş yapın.');
         }
 
         const newUser = {
@@ -107,7 +107,7 @@ const Auth = () => {
       name: role === 'ogrenci' ? 'Demo Öğrenci' : 'Demo Öğretmen',
       firstName: 'Demo',
       lastName: role === 'ogrenci' ? 'Öğrenci' : 'Öğretmen',
-      email: `demo_${role}@nashlab.com`,
+      email: role === 'ogrenci' ? 'demo.ogrenci@nashlab.com' : 'demo.ogretmen@nashlab.com',
       role: role,
       xp: 2500
     };
@@ -238,12 +238,12 @@ const Auth = () => {
           {isLogin && (
             <div style={{ marginTop: '2rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem' }}>
                <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Test hesabı ile hızlı giriş yapın:</p>
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <button onClick={() => handleDemoMode('ogrenci')} style={demoButtonStyle}>
-                     Öğrenci Modu
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <button type="button" onClick={() => handleDemoMode('ogrenci')} style={demoButtonStyle}>
+                     Demo Öğrenci Olarak Gir
                   </button>
-                  <button onClick={() => handleDemoMode('ogretmen')} style={demoButtonStyle}>
-                     Öğretmen Modu
+                  <button type="button" onClick={() => handleDemoMode('ogretmen')} style={demoButtonStyle}>
+                     Demo Öğretmen Olarak Gir
                   </button>
                </div>
             </div>
