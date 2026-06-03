@@ -21,6 +21,21 @@ const CATEGORIES = {
   publicEconomics: 'Kamu Ekonomisi ve Politika'
 };
 
+const DEFAULT_IDS = ['static_1', 'ind_2', 'mixed_4', 'mixed_1', 'dynamic_1'];
+
+// Filter and map academic scenarios safely
+const defaultScenarios = (academicScenarios || [])
+  .filter(s => s && DEFAULT_IDS.includes(s.id))
+  .map(s => {
+    let title = s.title || "Başlıksız Alıştırma";
+    if (s.id === 'static_1') title = 'Mahkumlar Açmazı';
+    else if (s.id === 'ind_2') title = 'Fiyat Rekabeti';
+    else if (s.id === 'mixed_4') title = 'Reklam Rekabeti';
+    else if (s.id === 'mixed_1') title = 'Karma Strateji Denetleme Oyunu';
+    else if (s.id === 'dynamic_1') title = 'Giriş Caydırma Oyunu';
+    return { ...s, title };
+  });
+
 const Practice = () => {
   const { user, updateProgression } = useAuth();
   const [selectedId, setSelectedId] = useState(() => localStorage.getItem('nashlab_current_scenario_id') || null);
@@ -28,7 +43,7 @@ const Practice = () => {
   const [answer, setAnswer] = useState(null);
   const [isEvaluated, setIsEvaluated] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
-  const [scenarios, setScenarios] = useState(academicScenarios);
+  const [scenarios, setScenarios] = useState(defaultScenarios);
   
   // Solution Tabs state (1 to 7)
   const [activeSolutionTab, setActiveSolutionTab] = useState('interpretation');
@@ -36,66 +51,105 @@ const Practice = () => {
   useEffect(() => {
     if (selectedId) {
       localStorage.setItem('nashlab_current_scenario_id', selectedId);
+      // Safety check: if selectedId is set but doesn't exist in current scenarios list, reset it
+      if (scenarios.length > 0) {
+        const exists = scenarios.some(s => s && s.id === selectedId);
+        if (!exists) {
+          setSelectedId(null);
+        }
+      }
     } else {
       localStorage.removeItem('nashlab_current_scenario_id');
     }
-  }, [selectedId]);
+  }, [selectedId, scenarios]);
 
   useEffect(() => {
     // Load Teacher Created Content
-    const customScenarios = JSON.parse(localStorage.getItem('nashlab_custom_questions') || '[]');
-    const merged = [...academicScenarios, ...customScenarios.map(s => ({
-      ...s,
-      authorId: s.teacherId,
-      author: 'Öğretmen',
-      // Map custom teacher questions safely
-      matrix: s.matrix || [[[0,0],[0,0]],[[0,0],[0,0]]],
-      question: s.question || 'Bu oyunda Nash dengesi ve rasyonel davranışlar nedir?',
-      options: s.options || [
+    let customScenarios = [];
+    try {
+      const raw = localStorage.getItem('nashlab_custom_questions');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          customScenarios = parsed;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to parse custom questions:', error);
+    }
+
+    const mappedCustom = customScenarios.map(s => {
+      if (!s) return null;
+
+      const safeOptions = Array.isArray(s.options) ? s.options.map(opt => ({
+        id: opt?.id || '',
+        text: opt?.text || 'Seçenek belirtilmemiş',
+        correct: opt?.correct !== undefined ? opt.correct : (s.correctAnswer ? s.correctAnswer === opt.id : false)
+      })) : [
         { id: 'a', text: 'Strateji A (İşbirliği)', correct: s.correctAnswer === 'a' },
         { id: 'b', text: 'Strateji B (Rekabet)', correct: s.correctAnswer === 'b' },
         { id: 'c', text: 'Strateji C (Farklılaşma)', correct: s.correctAnswer === 'c' },
         { id: 'd', text: 'Strateji D (Sapma)', correct: s.correctAnswer === 'd' }
-      ],
-      academicSolution: {
-        interpretation: s.explanation || s.desc,
-        players: 'Eğitmen tarafından belirtilen iki oyuncu.',
-        dominant: 'Bu özel soru için dominant stratejileri kendiniz analiz ediniz.',
-        bestResponse: 'En iyi tepkiler matris verilerinden bulunabilir.',
-        nash: s.explanation || 'Analiz sonucu denge tespit edilmiştir.',
-        pareto: 'Sosyal optimum ile Nash kıyaslaması.',
-        economicComment: 'İlgili durumun sektörel/ekonomik yansıması.'
-      },
-      visualData: s.visualData || {
-        type: 'matrix',
-        brA: [[0, 0]],
-        brB: [[0, 0]],
-        nashCells: [[0, 0]]
-      }
-    }))];
-    setScenarios(merged);
+      ];
+
+      return {
+        ...s,
+        id: s.id || `custom_${Date.now()}_${Math.random()}`,
+        title: s.title || "Başlıksız Alıştırma",
+        desc: s.desc || s.question || "Açıklama belirtilmemiş.",
+        category: s.category || "staticGames",
+        difficulty: s.difficulty || "Orta",
+        reward: s.reward || "200 XP",
+        authorId: s.teacherId,
+        author: 'Öğretmen',
+        matrix: s.matrix || [[[0,0],[0,0]],[[0,0],[0,0]]],
+        actions: s.actions || ['Strateji A', 'Strateji B'],
+        actionsPlayerB: s.actionsPlayerB || s.actions || ['Strateji A', 'Strateji B'],
+        question: s.question || 'Bu oyunda Nash dengesi ve rasyonel davranışlar nedir?',
+        options: safeOptions,
+        academicSolution: {
+          interpretation: s.explanation || s.desc || "Çözüm açıklaması eklenmemiş.",
+          players: 'Eğitmen tarafından belirtilen iki oyuncu.',
+          dominant: 'Bu özel soru için dominant stratejileri kendiniz analiz ediniz.',
+          bestResponse: 'En iyi tepkiler matris verilerinden bulunabilir.',
+          nash: s.explanation || 'Analiz sonucu denge tespit edilmiştir.',
+          pareto: 'Sosyal optimum ile Nash kıyaslaması.',
+          economicComment: 'İlgili durumun sektörel/ekonomik yansıması.',
+          ...s.academicSolution
+        },
+        visualData: s.visualData || {
+          type: 'matrix',
+          brA: [[0, 0]],
+          brB: [[0, 0]],
+          nashCells: [[0, 0]]
+        }
+      };
+    }).filter(Boolean);
+
+    setScenarios([...defaultScenarios, ...mappedCustom]);
   }, []);
 
-  const current = scenarios.find(s => s.id === selectedId);
+  const current = (scenarios || []).find(s => s && s.id === selectedId);
 
   const filteredScenarios = activeCategory === 'all' 
-    ? scenarios 
-    : scenarios.filter(s => s.category === activeCategory);
+    ? (scenarios || []) 
+    : (scenarios || []).filter(s => s && s.category === activeCategory);
 
   const handleEvaluate = () => {
     if (!answer) return;
     setIsEvaluated(true);
     setShowSolution(true); // Automatically open solution
-    if (answer.correct) {
+    if (answer.correct && current) {
       updateProgression(parseInt(current.reward) || 200, null, current.id, current.category || 'staticGames');
     }
   };
 
   const handleNext = () => {
-    const idx = scenarios.findIndex(s => s.id === selectedId);
-    if (idx < scenarios.length - 1) {
+    const list = scenarios || [];
+    const idx = list.findIndex(s => s && s.id === selectedId);
+    if (idx !== -1 && idx < list.length - 1) {
       resetState();
-      setSelectedId(scenarios[idx + 1].id);
+      setSelectedId(list[idx + 1].id);
     } else {
       setSelectedId(null);
       resetState();
@@ -113,6 +167,15 @@ const Practice = () => {
     if (isEvaluated) return;
     setAnswer(opt);
   };
+
+  const academicSolution = current?.academicSolution || {};
+  const solutionInterpretation = academicSolution.interpretation || 'Çözüm açıklaması eklenmemiş.';
+  const solutionPlayers = academicSolution.players || 'Oyuncu analizi eklenmemiş.';
+  const solutionDominant = academicSolution.dominant || 'Dominant strateji analizi eklenmemiş.';
+  const solutionBestResponse = academicSolution.bestResponse || 'En iyi tepki analizi eklenmemiş.';
+  const solutionNash = academicSolution.nash || 'Nash dengesi analizi eklenmemiş.';
+  const solutionPareto = academicSolution.pareto || 'Pareto analizi eklenmemiş.';
+  const solutionEconomicComment = academicSolution.economicComment || 'Ekonomik çıkarım eklenmemiş.';
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="practice-academic" style={{ paddingBottom: '4rem' }}>
@@ -147,49 +210,80 @@ const Practice = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
               {/* Question list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {filteredScenarios.length > 0 ? (
-                  filteredScenarios.map((s) => (
-                    <GlassCard 
-                      key={s.id} 
-                      style={{ 
-                        padding: '1.5rem', 
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        border: user?.completedScenarios?.includes(s.id) ? '1px solid #10b981' : '1px solid var(--glass-border)' 
-                      }}
-                      onClick={() => setSelectedId(s.id)}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', gap: '1.25rem' }}>
-                          <div style={iconBox}>
-                            {user?.completedScenarios?.includes(s.id) ? (
-                              <CheckCircle color="#10b981" />
-                            ) : s.author === 'Öğretmen' ? (
-                              <User color="#10b981" />
-                            ) : (
-                              <Brain color="var(--accent-blue)" />
-                            )}
+                {(filteredScenarios || []).length > 0 ? (
+                  (filteredScenarios || []).map((s) => {
+                    if (!s) return null;
+                    const isCompleted = user?.completedScenarios?.includes(s.id);
+                    return (
+                      <GlassCard 
+                        key={s.id} 
+                        style={{ 
+                          padding: '1.5rem', 
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          border: isCompleted ? '1px solid #10b981' : '1px solid var(--glass-border)' 
+                        }}
+                        onClick={() => {
+                          setSelectedId(s.id);
+                          resetState();
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', gap: '1.25rem' }}>
+                            <div style={iconBox}>
+                              {isCompleted ? (
+                                <CheckCircle color="#10b981" />
+                              ) : s.author === 'Öğretmen' ? (
+                                <User color="#10b981" />
+                              ) : (
+                                <Brain color="var(--accent-blue)" />
+                              )}
+                            </div>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>{s.title || "Başlıksız Alıştırma"}</h3>
+                                {s.author === 'Öğretmen' && <span style={teacherBadge}>Eğitmen İçeriği</span>}
+                              </div>
+                              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.25rem 0 0.5rem 0', lineClamp: '1', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                {s.desc || "Açıklama belirtilmemiş."}
+                              </p>
+                              <div style={badgeRow}>
+                                <span style={categoryTag}>{CATEGORIES[s.category] || s.category || "staticGames"}</span>
+                                <span style={diffTag}>{s.difficulty || "Orta"}</span>
+                                <span style={xpTag}>{s.reward || "200 XP"}</span>
+                                {isCompleted && <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓ Çözüldü</span>}
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>{s.title}</h3>
-                              {s.author === 'Öğretmen' && <span style={teacherBadge}>Eğitmen İçeriği</span>}
-                            </div>
-                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '0.25rem 0 0.5rem 0', lineClamp: '1', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                              {s.desc}
-                            </p>
-                            <div style={badgeRow}>
-                              <span style={categoryTag}>{CATEGORIES[s.category] || s.category}</span>
-                              <span style={diffTag}>{s.difficulty}</span>
-                              <span style={xpTag}>{s.reward} XP</span>
-                              {user?.completedScenarios?.includes(s.id) && <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓ Çözüldü</span>}
-                            </div>
+                          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }} onClick={(e) => e.stopPropagation()}>
+                            <PremiumButton 
+                              size="small" 
+                              variant="glass" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                setSelectedId(s.id); 
+                                setIsEvaluated(true);
+                                setShowSolution(true);
+                                setAnswer(null);
+                              }}
+                            >
+                              Çözümü Göster
+                            </PremiumButton>
+                            <PremiumButton 
+                              size="small" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                setSelectedId(s.id); 
+                                resetState(); 
+                              }}
+                            >
+                              Başla
+                            </PremiumButton>
                           </div>
                         </div>
-                        <PremiumButton size="small">Analize Başla</PremiumButton>
-                      </div>
-                    </GlassCard>
-                  ))
+                      </GlassCard>
+                    );
+                  })
                 ) : (
                   <GlassCard style={{ padding: '3rem', textAlign: 'center' }}>
                     <p style={{ color: 'var(--text-secondary)' }}>Bu kategoride henüz yayınlanmış bir akademik senaryo bulunmamaktadır.</p>
@@ -218,10 +312,10 @@ const Practice = () => {
                 </GlassCard>
 
                 <GlassCard style={{ padding: '1.5rem' }}>
-                  <h4 style={{ marginBottom: '0.75rem', fontSize: '0.9rem', fontWeight: 700 }}><Info size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} /> Çalışma Tavsiyesi</h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Nash dengesi analizi yaparken her zaman **"Best Response" (En İyi Tepki)** işaretleme metodunu kullanın. Karşılıklı en iyi tepkilerin çakıştığı hücreler, oyunun saf strateji dengeleridir.
-                  </p>
+                   <h4 style={{ marginBottom: '0.75rem', fontSize: '0.9rem', fontWeight: 700 }}><Info size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} /> Çalışma Tavsiyesi</h4>
+                   <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                     Nash dengesi analizi yaparken her zaman **"Best Response" (En İyi Tepki)** işaretleme metodunu kullanın. Karşılıklı en iyi tepkilerin çakıştığı hücreler, oyunun saf strateji dengeleridir.
+                   </p>
                 </GlassCard>
               </div>
             </div>
@@ -241,12 +335,12 @@ const Practice = () => {
                      {/* Question area */}
                      <GlassCard style={{ padding: '2rem', marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                           <span style={catBadge}>{CATEGORIES[current.category] || 'Senaryo'}</span>
-                           <span style={diffBadge}>{current.difficulty}</span>
+                           <span style={catBadge}>{CATEGORIES[current.category] || current.category || 'Senaryo'}</span>
+                           <span style={diffBadge}>{current.difficulty || 'Orta'}</span>
                            {current.author === 'Öğretmen' && <span style={teacherBadgeSmall}>Eğitmen İçeriği</span>}
                         </div>
-                        <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', fontWeight: 800 }}>{current.title}</h2>
-                        <p style={problemText}>{current.desc}</p>
+                        <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', fontWeight: 800 }}>{current.title || "Başlıksız Alıştırma"}</h2>
+                        <p style={problemText}>{current.desc || "Açıklama belirtilmemiş."}</p>
 
                         {/* Embed the Dynamic Academic Visualizer */}
                         {current.visualData && (
@@ -261,14 +355,15 @@ const Practice = () => {
 
                         <div style={questionHeader}>
                            <HelpCircle size={22} color="var(--accent-blue)" />
-                           <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>{current.question}</h4>
+                           <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>{current.question || "Soru cümlesi eklenmemiş."}</h4>
                         </div>
 
                         {/* Options */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                           {current.options.map(opt => {
+                           {(current.options || []).map(opt => {
+                              if (!opt) return null;
                               const isSelected = answer?.id === opt.id;
-                              const isCorrect = opt.correct;
+                              const isCorrect = opt.correct || false;
                               let btnBorderColor = 'var(--glass-border)';
                               let btnBackground = 'rgba(255,255,255,0.02)';
                               let btnOpacity = 1;
@@ -328,9 +423,9 @@ const Practice = () => {
                                          color: circleTextColor,
                                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700
                                       }}>
-                                         {opt.id.toUpperCase()}
+                                         {(opt.id || '').toUpperCase()}
                                       </div>
-                                      <span style={{ fontSize: '0.95rem', color: isEvaluated && isCorrect ? '#10b981' : 'white' }}>{opt.text}</span>
+                                      <span style={{ fontSize: '0.95rem', color: isEvaluated && isCorrect ? '#10b981' : 'white' }}>{opt.text || "Seçenek metni girilmemiş."}</span>
                                    </div>
                                 </button>
                               );
@@ -348,21 +443,30 @@ const Practice = () => {
                           </PremiumButton>
                         ) : (
                           <div style={{ marginTop: '2rem' }}>
-                             {answer.correct ? (
-                                <div style={successBox}>
-                                   <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: 700 }}>
-                                      <CheckCircle color="#10b981" /> Doğru Analiz
-                                   </h4>
-                                   <p style={{ fontSize: '0.9rem' }}>Harika! Oyun dengesini ve rasyonel oyuncu davranışlarını kusursuz şekilde tespit ettiniz.</p>
-                                   <div style={{ marginTop: '0.75rem', fontWeight: 800, color: '#fbbf24', fontSize: '1.1rem' }}>+{current.reward} XP Akademik Puan</div>
-                                </div>
+                             {answer ? (
+                               answer.correct ? (
+                                  <div style={successBox}>
+                                     <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: 700 }}>
+                                        <CheckCircle color="#10b981" /> Doğru Analiz
+                                     </h4>
+                                     <p style={{ fontSize: '0.9rem' }}>Harika! Oyun dengesini ve rasyonel oyuncu davranışlarını kusursuz şekilde tespit ettiniz.</p>
+                                     <div style={{ marginTop: '0.75rem', fontWeight: 800, color: '#fbbf24', fontSize: '1.1rem' }}>+{current.reward || "200"} XP Akademik Puan</div>
+                                  </div>
+                               ) : (
+                                  <div style={errorBox}>
+                                     <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: 700 }}>
+                                        <XCircle color="#ef4444" /> Hatalı Analiz
+                                     </h4>
+                                     <p style={{ fontSize: '0.9rem' }}>Belirttiğiniz strateji dengesi, rasyonel kararlarla veya Nash en iyi tepki kesişimiyle örtüşmemektedir.</p>
+                                  </div>
+                               )
                              ) : (
-                                <div style={errorBox}>
-                                   <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: 700 }}>
-                                      <XCircle color="#ef4444" /> Hatalı Analiz
-                                   </h4>
-                                   <p style={{ fontSize: '0.9rem' }}>Belirttiğiniz strateji dengesi, rasyonel kararlarla veya Nash en iyi tepki kesişimiyle örtüşmemektedir.</p>
-                                </div>
+                               <div style={infoBox}>
+                                 <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: 700, color: 'var(--accent-blue)' }}>
+                                    <BookOpen color="var(--accent-blue)" /> Çözüm İzleme Modu
+                                 </h4>
+                                 <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Bu oyunun çözüm adımlarını, dominant stratejilerini ve akademik analizini aşağıdan inceleyebilirsiniz.</p>
+                               </div>
                              )}
                              <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
                                 <PremiumButton variant="glass" style={{ flex: 1 }} onClick={() => setShowSolution(!showSolution)} icon={Eye}>
@@ -414,49 +518,49 @@ const Practice = () => {
                                 {activeSolutionTab === 'interpretation' && (
                                   <SolutionBlock 
                                     title="Problemin Stratejik ve Ekonomik Yorumu" 
-                                    text={current.academicSolution.interpretation || 'Bu oyunun temel amacı oyuncuların bencil çıkarları ile kolektif ortak fayda arasındaki gerilimi analiz etmektir.'} 
+                                    text={solutionInterpretation} 
                                     tip="Ekonomik aktörlerin stratejik hedefleri ve oyunun temel hikayesi bu aşamada özetlenmektedir."
                                   />
                                 )}
                                 {activeSolutionTab === 'players' && (
                                   <SolutionBlock 
                                     title="Oyuncular, Eylemler ve Kısıtlar" 
-                                    text={current.academicSolution.players || 'Oyunda karar alıcı olan iki simetrik firma veya kurum yer almaktadır.'} 
+                                    text={solutionPlayers} 
                                     tip="Oyuncuların eylem uzayları (action space) ve ödeme fonksiyonlarının genel mantığı."
                                   />
                                 )}
                                 {activeSolutionTab === 'dominant' && (
                                   <SolutionBlock 
                                     title="Dominant (Baskın) Strateji Analizi" 
-                                    text={current.academicSolution.dominant || 'Dominant strateji, karşı tarafın ne yaptığından tamamen bağımsız olarak daima en yüksek getiriyi sağlayan stratejidir.'} 
+                                    text={solutionDominant} 
                                     tip="Dominant stratejiler belirlenerek oyun 'iteratif dominant strateji elemesi' ile sadeleştirilebilir."
                                   />
                                 )}
                                 {activeSolutionTab === 'bestResponse' && (
                                   <SolutionBlock 
                                     title="Best Response (En İyi Tepki) Analizi ve Koşulları" 
-                                    text={current.academicSolution.bestResponse || 'Oyuncu A\'nın her bir hamlesine karşılık Oyuncu B\'nin getirisini maksimize eden seçimler işaretlenmiştir.'} 
+                                    text={solutionBestResponse} 
                                     tip="Karşılıklı en iyi tepki (Best Response) fonksiyonlarının kesişimi Nash dengesini bulmamızı sağlar."
                                   />
                                 )}
                                 {activeSolutionTab === 'nash' && (
                                   <SolutionBlock 
                                     title="Nash Dengesi Türetilişi" 
-                                    text={current.academicSolution.nash || 'Oyunun Nash dengesi karşılıklı en iyi tepkilerin kesiştiği kararlı hücredir.'} 
+                                    text={solutionNash} 
                                     tip="Hiçbir oyuncunun tek taraflı olarak strateji değiştirmek (sapmak) için bir teşvikinin olmadığı kararlı denge durumudur."
                                   />
                                 )}
                                 {activeSolutionTab === 'pareto' && (
                                   <SolutionBlock 
                                     title="Pareto Verimlilik ve Sosyal Optimum Kıyaslaması" 
-                                    text={current.academicSolution.pareto || 'Nash dengesinin toplumsal toplam faydayı maksimize edip etmediği bu başlık altında sorgulanır.'} 
+                                    text={solutionPareto} 
                                     tip="Pareto etkinsizlik, oyuncuların birbirine zarar vermeden durumlarını iyileştirebileceği ortak bir alternatifin varlığını gösterir."
                                   />
                                 )}
                                 {activeSolutionTab === 'economicComment' && (
                                   <SolutionBlock 
                                     title="Ekonomik Çıkarım ve Politika Önerileri" 
-                                    text={current.academicSolution.economicComment || 'Denge sonucunun serbest piyasa ve kamu yönetimi üzerindeki reel yansımaları.'} 
+                                    text={solutionEconomicComment} 
                                     tip="Regülatörlerin veya piyasa yapıcılarının bu verimsiz dengeleri kırmak için uygulayabileceği ceza, vergi veya teşvik mekanizmaları."
                                   />
                                 )}
@@ -584,6 +688,7 @@ const optionBtn = { width: '100%', padding: '1.25rem', border: '1px solid', bord
 
 const successBox = { padding: '1.5rem', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid #10b981', borderRadius: '12px' };
 const errorBox = { padding: '1.5rem', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid #ef4444', borderRadius: '12px' };
+const infoBox = { padding: '1.5rem', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid var(--accent-blue)', borderRadius: '12px' };
 
 // Solution tabs styles
 const solutionTabBar = {

@@ -25,32 +25,34 @@ export const AcademicVisualizer = ({ scenario, isRevealed = false, userAnswer = 
 
 // 1. GELİŞMİŞ MATRİS GÖRSELLEŞTİRİCİ
 const MatrixVisualizer = ({ scenario, isRevealed, userAnswer }) => {
-  const { matrix, actions, actionsPlayerB, visualData } = scenario;
-  const brA = visualData?.brA || [];
-  const brB = visualData?.brB || [];
-  const nashCells = visualData?.nashCells || [];
-  const actB = actionsPlayerB || actions; // B'nin stratejileri yoksa A ile aynı kabul edilir
+  const actions = scenario?.actions || ['Strateji 1', 'Strateji 2'];
+  const actionsPlayerB = scenario?.actionsPlayerB || scenario?.actions || ['Strateji 1', 'Strateji 2'];
+  const matrix = scenario?.matrix || [[[0, 0], [0, 0]], [[0, 0], [0, 0]]];
+  const brA = scenario?.visualData?.brA || [];
+  const brB = scenario?.visualData?.brB || [];
+  const nashCells = scenario?.visualData?.nashCells || [];
+  const actB = actionsPlayerB;
 
   const checkIsBR = (player, r, c) => {
     if (!isRevealed) return false;
     if (player === 'A') {
-      return brA.some(cell => cell[0] === r && cell[1] === c);
+      return brA.some(cell => cell && cell[0] === r && cell[1] === c);
     }
-    return brB.some(cell => cell[0] === r && cell[1] === c);
+    return brB.some(cell => cell && cell[0] === r && cell[1] === c);
   };
 
   const checkIsNash = (r, c) => {
     if (!isRevealed) return false;
-    return nashCells.some(cell => cell[0] === r && cell[1] === c);
+    return nashCells.some(cell => cell && cell[0] === r && cell[1] === c);
   };
 
   const checkIsWrongCell = (r, c) => {
     if (!isRevealed || !userAnswer || userAnswer.correct) return false;
     const text = userAnswer.text || '';
-    const pairStr1 = `(${actions[r]}, ${actB[c]})`;
-    const pairStr2 = `${actions[r]}, ${actB[c]}`;
+    const pairStr1 = `(${actions[r] || ''}, ${actB[c] || ''})`;
+    const pairStr2 = `${actions[r] || ''}, ${actB[c] || ''}`;
     const mentionsCell = text.includes(pairStr1) || text.includes(pairStr2);
-    const isNash = nashCells.some(cell => cell[0] === r && cell[1] === c);
+    const isNash = nashCells.some(cell => cell && cell[0] === r && cell[1] === c);
     return mentionsCell && !isNash;
   };
 
@@ -71,16 +73,16 @@ const MatrixVisualizer = ({ scenario, isRevealed, userAnswer }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: '0.75rem', alignItems: 'center', marginTop: '1rem' }}>
         {/* Row 1 Header */}
         <div></div>
-        <div style={columnLabel}>{actB[0]}</div>
-        <div style={columnLabel}>{actB[1]}</div>
+        <div style={columnLabel}>{actB[0] || 'Strateji 1'}</div>
+        <div style={columnLabel}>{actB[1] || 'Strateji 2'}</div>
 
         {/* Row 2 */}
-        <div style={rowLabel}>{actions[0]}</div>
+        <div style={rowLabel}>{actions[0] || 'Strateji 1'}</div>
         <Cell r={0} c={0} matrix={matrix} isNash={checkIsNash(0, 0)} isWrong={checkIsWrongCell(0, 0)} isBrA={checkIsBR('A', 0, 0)} isBrB={checkIsBR('B', 0, 0)} />
         <Cell r={0} c={1} matrix={matrix} isNash={checkIsNash(0, 1)} isWrong={checkIsWrongCell(0, 1)} isBrA={checkIsBR('A', 0, 1)} isBrB={checkIsBR('B', 0, 1)} />
 
         {/* Row 3 */}
-        <div style={rowLabel}>{actions[1]}</div>
+        <div style={rowLabel}>{actions[1] || 'Strateji 2'}</div>
         <Cell r={1} c={0} matrix={matrix} isNash={checkIsNash(1, 0)} isWrong={checkIsWrongCell(1, 0)} isBrA={checkIsBR('A', 1, 0)} isBrB={checkIsBR('B', 1, 0)} />
         <Cell r={1} c={1} matrix={matrix} isNash={checkIsNash(1, 1)} isWrong={checkIsWrongCell(1, 1)} isBrA={checkIsBR('A', 1, 1)} isBrB={checkIsBR('B', 1, 1)} />
       </div>
@@ -89,8 +91,8 @@ const MatrixVisualizer = ({ scenario, isRevealed, userAnswer }) => {
 };
 
 const Cell = ({ r, c, matrix, isNash, isWrong, isBrA, isBrB }) => {
-  const payA = matrix[r][c][0];
-  const payB = matrix[r][c][1];
+  const payA = (matrix && matrix[r] && matrix[r][c] && matrix[r][c][0] !== undefined) ? matrix[r][c][0] : 0;
+  const payB = (matrix && matrix[r] && matrix[r][c] && matrix[r][c][1] !== undefined) ? matrix[r][c][1] : 0;
 
   let borderColor = 'var(--glass-border)';
   let background = 'rgba(255,255,255,0.02)';
