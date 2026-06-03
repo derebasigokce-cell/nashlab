@@ -49,8 +49,8 @@ export const academicScenarios = [
     actions: ['Protokol T', 'Protokol W'],
     question: 'Bu oyunda saf strateji Nash dengeleri hangileridir?',
     options: [
-      { id: 'a', text: '(Protokol T, Protokol T) ve (Protokol W, Protokol W)', correct: true },
-      { id: 'b', text: 'Sadece (Protokol T, Protokol T)', correct: false },
+      { id: 'a', text: 'Sadece (Protokol T, Protokol T)', correct: false },
+      { id: 'b', text: '(Protokol T, Protokol T) ve (Protokol W, Protokol W)', correct: true },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'd', text: '(Protokol T, Protokol W) ve (Protokol W, Protokol T)', correct: false }
     ],
@@ -81,9 +81,9 @@ export const academicScenarios = [
     actions: ['Mühendislik Gücü (İşbirliği)', 'Kendi Projesi (Sapma)'],
     question: 'Bu oyunda hangi hücreler Nash dengesidir ve hangisi risk dominanttır?',
     options: [
-      { id: 'a', text: 'Nash dengeleri: (İşbirliği, İşbirliği) ve (Sapma, Sapma). Risk dominant olan (Sapma, Sapma) dengesidir.', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: 'Tek Nash dengesi vardır: (İşbirliği, İşbirliği) ve bu aynı zamanda risk dominanttır.', correct: false },
-      { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
+      { id: 'c', text: 'Nash dengeleri: (İşbirliği, İşbirliği) ve (Sapma, Sapma). Risk dominant olan (Sapma, Sapma) dengesidir.', correct: true },
       { id: 'd', text: 'Nash dengeleri: (İşbirliği, Sapma) ve (Sapma, İşbirliği).', correct: false }
     ],
     academicSolution: {
@@ -113,10 +113,10 @@ export const academicScenarios = [
     actions: ['Uyumlu Strateji', 'Agresif Strateji'],
     question: 'Bu oyunda dominant stratejiler ve Nash dengesi nedir?',
     options: [
-      { id: 'a', text: 'Baskın strateji Agresif Stratejidir. Nash dengesi: (Agresif Strateji, Agresif Strateji).', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: 'Baskın strateji Uyumlu Stratejidir. Nash dengesi: (Uyumlu Strateji, Uyumlu Strateji).', correct: false },
       { id: 'c', text: 'dominant strateji yoktur, iki adet Nash dengesi vardır.', correct: false },
-      { id: 'd', text: 'Nash dengesi yoktur.', correct: false }
+      { id: 'd', text: 'Baskın strateji Agresif Stratejidir. Nash dengesi: (Agresif Strateji, Agresif Strateji).', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, firmaların pazar payı kapma hırsının onları daha kötü bir duruma sürüklediği bir Mahkumlar Açmazı türevidir.',
@@ -177,8 +177,8 @@ export const academicScenarios = [
     actions: ['ARM Mimarisi', 'x86 Mimarisi'],
     question: 'Bu oyundaki saf strateji Nash dengeleri hangileridir?',
     options: [
-      { id: 'a', text: '(ARM Mimarisi, ARM Mimarisi) ve (x86 Mimarisi, x86 Mimarisi)', correct: true },
-      { id: 'b', text: 'Sadece (ARM Mimarisi, ARM Mimarisi)', correct: false },
+      { id: 'a', text: 'Sadece (ARM Mimarisi, ARM Mimarisi)', correct: false },
+      { id: 'b', text: '(ARM Mimarisi, ARM Mimarisi) ve (x86 Mimarisi, x86 Mimarisi)', correct: true },
       { id: 'c', text: '(ARM Mimarisi, x86 Mimarisi) ve (x86 Mimarisi, ARM Mimarisi)', correct: false },
       { id: 'd', text: 'Bu oyunun Nash dengesi yoktur.', correct: false }
     ],
@@ -209,9 +209,9 @@ export const academicScenarios = [
     actions: ['Cadde X', 'Cadde Y'],
     question: 'Bu oyunda saf strateji Nash dengeleri nelerdir ve hangi tür oyun kategorisine girer?',
     options: [
-      { id: 'a', text: 'Nash dengeleri: (Cadde X, Cadde Y) ve (Cadde Y, Cadde X). Anti-koordinasyon oyunudur.', correct: true },
+      { id: 'a', text: 'Tek bir Nash dengesi vardır: (Cadde X, Cadde X).', correct: false },
       { id: 'b', text: 'Nash dengeleri: (Cadde X, Cadde X) ve (Cadde Y, Cadde Y). Koordinasyon oyunudur.', correct: false },
-      { id: 'c', text: 'Tek bir Nash dengesi vardır: (Cadde X, Cadde X).', correct: false },
+      { id: 'c', text: 'Nash dengeleri: (Cadde X, Cadde Y) ve (Cadde Y, Cadde X). Anti-koordinasyon oyunudur.', correct: true },
       { id: 'd', text: 'Bu oyunun Nash dengesi yoktur.', correct: false }
     ],
     academicSolution: {
@@ -241,10 +241,10 @@ export const academicScenarios = [
     actions: ['Yeni Sisteme Geç', 'Eski Yöntemde Kal'],
     question: 'Bu oyunda Nash dengeleri hangileridir?',
     options: [
-      { id: 'a', text: '(Yeni Sisteme Geç, Yeni Sisteme Geç) ve (Eski Yöntemde Kal, Eski Yöntemde Kal)', correct: true },
+      { id: 'a', text: '(Yeni Sisteme Geç, Eski Yöntemde Kal) ve (Eski Yöntemde Kal, Yeni Sisteme Geç)', correct: false },
       { id: 'b', text: 'Sadece (Yeni Sisteme Geç, Yeni Sisteme Geç)', correct: false },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
-      { id: 'd', text: '(Yeni Sisteme Geç, Eski Yöntemde Kal) ve (Eski Yöntemde Kal, Yeni Sisteme Geç)', correct: false }
+      { id: 'd', text: '(Yeni Sisteme Geç, Yeni Sisteme Geç) ve (Eski Yöntemde Kal, Eski Yöntemde Kal)', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun bir Stag Hunt (Geyik Avı) varyasyonudur. Yeni sisteme geçiş ortak güven ve koordinasyon gerektirir.',
@@ -309,8 +309,8 @@ export const academicScenarios = [
     actions: ['Yüksek Akım', 'Düşük Akım'],
     question: 'Bu oyunda saf strateji Nash dengesi var mıdır, varsa hangileridir?',
     options: [
-      { id: 'a', text: '(Yüksek, Düşük) ve (Düşük, Yüksek) olmak üzere iki denge vardır.', correct: true },
-      { id: 'b', text: 'Tek bir Nash dengesi vardır: (Yüksek, Yüksek).', correct: false },
+      { id: 'a', text: 'Tek bir Nash dengesi vardır: (Yüksek, Yüksek).', correct: false },
+      { id: 'b', text: '(Yüksek, Düşük) ve (Düşük, Yüksek) olmak üzere iki denge vardır.', correct: true },
       { id: 'c', text: 'Tek bir Nash dengesi vardır: (Düşük, Düşük).', correct: false },
       { id: 'd', text: 'Saf strateji Nash dengesi yoktur.', correct: false }
     ],
@@ -341,9 +341,9 @@ export const academicScenarios = [
     actions: ['Tam Yatırım', 'Kısıtlı Bütçe'],
     question: 'Bu oyunda siber güvenlik işbirliğini engelleyen Nash dengesi hangisidir?',
     options: [
-      { id: 'a', text: '(Kısıtlı Bütçe, Kısıtlı Bütçe)', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: '(Tam Yatırım, Tam Yatırım)', correct: false },
-      { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
+      { id: 'c', text: '(Kısıtlı Bütçe, Kısıtlı Bütçe)', correct: true },
       { id: 'd', text: '(Tam Yatırım, Kısıtlı Bütçe)', correct: false }
     ],
     academicSolution: {
@@ -373,10 +373,10 @@ export const academicScenarios = [
     actions: ['Yüksek Komisyon', 'Düşük Komisyon'],
     question: 'Bu oyunda her iki bankanın dominant stratejisi ve Nash dengesi nedir?',
     options: [
-      { id: 'a', text: 'Baskın strateji: Düşük Komisyon. Nash Dengesi: (Düşük Komisyon, Düşük Komisyon).', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: 'Baskın strateji: Yüksek Komisyon. Nash Dengesi: (Yüksek Komisyon, Yüksek Komisyon).', correct: false },
       { id: 'c', text: 'dominant strateji yoktur, iki adet Nash dengesi mevcuttur.', correct: false },
-      { id: 'd', text: 'Nash dengesi yoktur.', correct: false }
+      { id: 'd', text: 'Baskın strateji: Düşük Komisyon. Nash Dengesi: (Düşük Komisyon, Düşük Komisyon).', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, bankaların gizli anlaşma (collusion) yapamadığı durumlarda fiyat kırma eğilimini gösteren bir Mahkumlar Açmazı modelidir.',
@@ -437,8 +437,8 @@ export const academicScenarios = [
     actions: ['Yüksek Sınır', 'Düşük Sınır'],
     question: 'Bu oyunda firmaların seçtiği denge noktası hangisidir?',
     options: [
-      { id: 'a', text: '(Düşük Sınır, Düşük Sınır)', correct: true },
-      { id: 'b', text: '(Yüksek Sınır, Yüksek Sınır)', correct: false },
+      { id: 'a', text: '(Yüksek Sınır, Yüksek Sınır)', correct: false },
+      { id: 'b', text: '(Düşük Sınır, Düşük Sınır)', correct: true },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'd', text: '(Düşük Sınır, Yüksek Sınır)', correct: false }
     ],
@@ -469,9 +469,9 @@ export const academicScenarios = [
     actions: ['Güç Birleştir', 'Tek Başına'],
     question: 'Bu oyunda Nash dengeleri hangileridir?',
     options: [
-      { id: 'a', text: '(Güç Birleştir, Güç Birleştir) ve (Tek Başına, Tek Başına)', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: 'Sadece (Güç Birleştir, Güç Birleştir)', correct: false },
-      { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
+      { id: 'c', text: '(Güç Birleştir, Güç Birleştir) ve (Tek Başına, Tek Başına)', correct: true },
       { id: 'd', text: '(Güç Birleştir, Tek Başına)', correct: false }
     ],
     academicSolution: {
@@ -501,10 +501,10 @@ export const academicScenarios = [
     actions: ['Sefer Ekle', 'Ekleme'],
     question: 'Bu oyunda Nash dengesi nedir?',
     options: [
-      { id: 'a', text: '(Sefer Ekle, Sefer Ekle)', correct: true },
+      { id: 'a', text: '(Sefer Ekle, Ekleme)', correct: false },
       { id: 'b', text: '(Ekleme, Ekleme)', correct: false },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
-      { id: 'd', text: '(Sefer Ekle, Ekleme)', correct: false }
+      { id: 'd', text: '(Sefer Ekle, Sefer Ekle)', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, ulaşım sektöründe aşırı kapasite oluşturma dürtüsünün karları nasıl erittiğini gösteren bir Mahkumlar Açmazı durumudur.',
@@ -569,8 +569,8 @@ export const academicScenarios = [
     actionsPlayerB: ['Saldırı', 'Bekle'],
     question: 'Sistem\'in Aktif Koruma yapma olasılığı "q" ve Hacker\'ın Saldırı yapma olasılığı "p" ise, karma strateji Nash dengesindeki p ve q değerleri nedir?',
     options: [
-      { id: 'a', text: 'p = 0.23, q = 0.62', correct: true },
-      { id: 'b', text: 'p = 0.40, q = 0.40', correct: false },
+      { id: 'a', text: 'p = 0.40, q = 0.40', correct: false },
+      { id: 'b', text: 'p = 0.23, q = 0.62', correct: true },
       { id: 'c', text: 'p = 0.30, q = 0.70', correct: false },
       { id: 'd', text: 'Bu oyunun karma strateji dengesi yoktur.', correct: false }
     ],
@@ -600,9 +600,9 @@ export const academicScenarios = [
     actionsPlayerB: ['Sola Vur', 'Sağa Vur'],
     question: 'Futbolcunun sola vurma olasılığı "p" ve kalecinin sola atlama olasılığı "q" ise, karma strateji Nash dengesindeki p ve q oranları ne olmalıdır?',
     options: [
-      { id: 'a', text: 'p = 0.55, q = 0.55', correct: true },
+      { id: 'a', text: 'p = 0.70, q = 0.30', correct: false },
       { id: 'b', text: 'p = 0.50, q = 0.50', correct: false },
-      { id: 'c', text: 'p = 0.70, q = 0.30', correct: false },
+      { id: 'c', text: 'p = 0.55, q = 0.55', correct: true },
       { id: 'd', text: 'Saf strateji dengesi vardır.', correct: false }
     ],
     academicSolution: {
@@ -630,10 +630,10 @@ export const academicScenarios = [
     actions: ['İndirim Yap', 'Standart Kal'],
     question: 'Bu oyunda firmaların tarafsız kalmasını sağlayan karma strateji olasılıkları p ve q nedir?',
     options: [
-      { id: 'a', text: 'p = 0.60, q = 0.60', correct: true },
+      { id: 'a', text: 'Karma strateji dengesi yoktur.', correct: false },
       { id: 'b', text: 'p = 0.50, q = 0.50', correct: false },
       { id: 'c', text: 'p = 0.40, q = 0.40', correct: false },
-      { id: 'd', text: 'Karma strateji dengesi yoktur.', correct: false }
+      { id: 'd', text: 'p = 0.60, q = 0.60', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, işbirliği (standart) ile sapma (indirim) arasındaki çatışmayı gösteren simetrik bir pazar rekabeti oyunudur.',
@@ -694,8 +694,8 @@ export const academicScenarios = [
     actionsPlayerB: ['Zamanında Gel', 'İptal Et'],
     question: 'Yolcunun zamanında gelme olasılığı "p" ve havayolunun overbook yapma olasılığı "q" ise, karma strateji dengesi nedir?',
     options: [
-      { id: 'a', text: 'p = 0.50, q = 0.80', correct: true },
-      { id: 'b', text: 'p = 0.30, q = 0.70', correct: false },
+      { id: 'a', text: 'p = 0.30, q = 0.70', correct: false },
+      { id: 'b', text: 'p = 0.50, q = 0.80', correct: true },
       { id: 'c', text: 'p = 0.60, q = 0.40', correct: false },
       { id: 'd', text: 'Saf strateji dengesi vardır.', correct: false }
     ],
@@ -724,9 +724,9 @@ export const academicScenarios = [
     actions: ['Agresif Alım', 'Açığa Satış'],
     question: 'Bu arbitraj oyununda karma strateji Nash dengesindeki p ve q olasılıkları ne olmalıdır?',
     options: [
-      { id: 'a', text: 'p = 0.31, q = 0.31', correct: true },
+      { id: 'a', text: 'p = 0.40, q = 0.60', correct: false },
       { id: 'b', text: 'p = 0.50, q = 0.50', correct: false },
-      { id: 'c', text: 'p = 0.40, q = 0.60', correct: false },
+      { id: 'c', text: 'p = 0.31, q = 0.31', correct: true },
       { id: 'd', text: 'Saf dengesi vardır.', correct: false }
     ],
     academicSolution: {
@@ -754,10 +754,10 @@ export const academicScenarios = [
     actions: ['Kırmızı Et İndirimi', 'Temizlik Ürünü İndirimi'],
     question: 'Bu oyunda karma strateji Nash dengesi olasılıkları nedir?',
     options: [
-      { id: 'a', text: 'p = 0.50, q = 0.50', correct: true },
+      { id: 'a', text: 'Karma strateji dengesi yoktur.', correct: false },
       { id: 'b', text: 'p = 0.30, q = 0.70', correct: false },
       { id: 'c', text: 'p = 0.40, q = 0.60', correct: false },
-      { id: 'd', text: 'Karma strateji dengesi yoktur.', correct: false }
+      { id: 'd', text: 'p = 0.50, q = 0.50', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun bir anti-koordinasyon oyunudur. Süpermarketler rekabeti yumuşatmak için farklı promosyonlara yönelmek zorundadır.',
@@ -814,8 +814,8 @@ export const academicScenarios = [
     desc: 'İki internet servis sağlayıcı (Firma A ve Firma B) tamamen özdeş 100 Mbps fiber internet paketi satmaktadır. Tüketiciler en ufak fiyat farkına karşı son derece duyarlıdır ve daima ucuz olan firmayı tercih etmektedir (Fiyatlar eşitse pazar %50-%50 paylaşılır). Her iki firmanın da birim abone başına aylık operasyonel maliyeti c = 120 TL\'dir. Firmalar aynı anda aylık abonelik fiyatları PA ve PB\'yi belirlemektedir.',
     question: 'Bertrand varsayımları altında bu oyunun Nash dengesindeki fiyatlar (PA*, PB*) nedir?',
     options: [
-      { id: 'a', text: 'PA* = 120 TL, PB* = 120 TL (Fiyat = Marjinal Maliyet)', correct: true },
-      { id: 'b', text: 'PA* = 200 TL, PB* = 200 TL', correct: false },
+      { id: 'a', text: 'PA* = 200 TL, PB* = 200 TL', correct: false },
+      { id: 'b', text: 'PA* = 120 TL, PB* = 120 TL (Fiyat = Marjinal Maliyet)', correct: true },
       { id: 'c', text: 'PA* = 150 TL, PB* = 120 TL', correct: false },
       { id: 'd', text: 'Bu oyunun Nash dengesi yoktur.', correct: false }
     ],
@@ -844,9 +844,9 @@ export const academicScenarios = [
     desc: 'Bir çelik duopolünde, devlet kuruluşu Erdemir (Lider) önce kapasitesini/üretim miktarını q1 belirlemektedir. Özel çelik üreticisi Kardemir (Takipçi) ise Erdemir\'in üretim miktarını gözlemledikten sonra kendi üretim miktarı q2\'yi seçmektedir. Pazarın ters talep fonksiyonu: P(Q) = 30 - Q (Q = q1 + q2) ve iki firmanın da birim üretim maliyeti c = 6 TL\'dir.',
     question: 'Stackelberg ardışık dengesinde Lider firmanın (Erdemir) üretimi q1* ve Takipçi firmanın (Kardemir) üretimi q2* sırasıyla kaç birim olmalıdır?',
     options: [
-      { id: 'a', text: 'q1* = 12, q2* = 6', correct: true },
+      { id: 'a', text: 'q1* = 10, q2* = 5', correct: false },
       { id: 'b', text: 'q1* = 8, q2* = 8', correct: false },
-      { id: 'c', text: 'q1* = 10, q2* = 5', correct: false },
+      { id: 'c', text: 'q1* = 12, q2* = 6', correct: true },
       { id: 'd', text: 'q1* = 6, q2* = 12', correct: false }
     ],
     academicSolution: {
@@ -874,10 +874,10 @@ export const academicScenarios = [
     actions: ['Kota Uyum', 'Kota İhlal'],
     question: 'Bu kartel oyununda tarafların rasyonel seçimi (Nash Dengesi) hangisidir?',
     options: [
-      { id: 'a', text: '(Kota İhlal, Kota İhlal)', correct: true },
+      { id: 'a', text: '(Kota Uyum, Kota İhlal)', correct: false },
       { id: 'b', text: '(Kota Uyum, Kota Uyum)', correct: false },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
-      { id: 'd', text: '(Kota Uyum, Kota İhlal)', correct: false }
+      { id: 'd', text: '(Kota İhlal, Kota İhlal)', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, kartel anlaşmalarının neden sürdürülemez olduğunu gösteren tipik bir Mahkumlar Açmazı modellemesidir.',
@@ -938,8 +938,8 @@ export const academicScenarios = [
     actions: ['Yüksek Teklif', 'Düşük Teklif'],
     question: 'Bu oyunda oluşan Nash dengesi aşağıdakilerden hangisidir?',
     options: [
-      { id: 'a', text: '(Yüksek Teklif, Yüksek Teklif)', correct: true },
-      { id: 'b', text: '(Düşük Teklif, Düşük Teklif)', correct: false },
+      { id: 'a', text: '(Düşük Teklif, Düşük Teklif)', correct: false },
+      { id: 'b', text: '(Yüksek Teklif, Yüksek Teklif)', correct: true },
       { id: 'c', text: '(Yüksek Teklif, Düşük Teklif)', correct: false },
       { id: 'd', text: 'Nash dengesi yoktur.', correct: false }
     ],
@@ -970,9 +970,9 @@ export const academicScenarios = [
     actions: ['Konsorsiyum', 'Rekabet'],
     question: 'Bu oyunda firmaların rasyonel seçimi hangisidir?',
     options: [
-      { id: 'a', text: '(Rekabet, Rekabet)', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: '(Konsorsiyum, Konsorsiyum)', correct: false },
-      { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
+      { id: 'c', text: '(Rekabet, Rekabet)', correct: true },
       { id: 'd', text: '(Konsorsiyum, Rekabet)', correct: false }
     ],
     academicSolution: {
@@ -1004,10 +1004,10 @@ export const academicScenarios = [
     desc: 'Bir şehirdeki tekel konumundaki süpermarket zinciri (In/Mevcut Firma) ve şehre yeni girmek isteyen yerel bir zincir (Out/Rakip) arasındaki rekabeti inceleyelim. Önce Rakip pazar giriş kararını verir: "Giriş Yap" veya "Giriş Yapma (Dışarıda Kal)". Eğer Rakip dışarıda kalırsa, oyun biter: Rakip 0 birim kazanırken, Mevcut tekel 10 birim kâr elde eder. Eğer Rakip giriş yaparsa, bu kez Mevcut firma karar vermek zorundadır: Rakiple "Savaş (Fiyat Kır)" veya pazarı "Paylaş". Eğer savaşırsa, her iki firma da yıkıcı fiyat savaşı nedeniyle -2 birim zarar eder. Eğer paylaşırsa, pazar ikiye bölünür ve her iki firma da 3\'er birim kâr elde eder.',
     question: 'Bu ardışık oyunun geriye doğru tümevarım (Backward Induction) ile bulunan Alt Oyun Kusursuz Dengesi (SPE) nedir?',
     options: [
-      { id: 'a', text: 'SPE: Rakip Giriş Yapar; Mevcut Paylaşır. Denge ödemesi: (3, 3).', correct: true },
+      { id: 'a', text: 'Bu oyunun dengesi yoktur.', correct: false },
       { id: 'b', text: 'SPE: Rakip Giriş Yapmaz; Mevcut Savaşır. Denge ödemesi: (0, 10).', correct: false },
       { id: 'c', text: 'SPE: Rakip Giriş Yapar; Mevcut Savaşır. Denge ödemesi: (-2, -2).', correct: false },
-      { id: 'd', text: 'Bu oyunun dengesi yoktur.', correct: false }
+      { id: 'd', text: 'SPE: Rakip Giriş Yapar; Mevcut Paylaşır. Denge ödemesi: (3, 3).', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, geriye doğru tümevarım ve alt oyun kusursuz dengesi (Subgame Perfect Equilibrium) kavramlarını açıklayan klasik bir Pazara Giriş Engelleme (Entry Deterrence) modelidir.',
@@ -1088,8 +1088,8 @@ export const academicScenarios = [
     desc: 'Google, yeni bir yapay zeka start-up\'ının geliştirdiği patenti satın almak ("Satın Al") veya bu patenti kopyalayarak rakip ürün çıkarmak ("Kopyala") istemektedir. Önce Start-up patent lisans ücretini belirler: "Yüksek Fiyat" veya "Düşük Fiyat". Yüksek fiyatta Google satın alırsa (Start-up: 6, Google: 4), kopyalarsa (Start-up: 1, Google: 6) olur. Düşük fiyatta Google satın alırsa (Start-up: 4, Google: 8), kopyalarsa (Start-up: 1, Google: 6) olur.',
     question: 'Geriye doğru tümevarım ile elde edilen SPE dengesi nedir?',
     options: [
-      { id: 'a', text: 'Start-up: Düşük Fiyat belirler | Google: Satın Alır.', correct: true },
-      { id: 'b', text: 'Start-up: Yüksek Fiyat belirler | Google: Kopyalar.', correct: false },
+      { id: 'a', text: 'Start-up: Yüksek Fiyat belirler | Google: Kopyalar.', correct: false },
+      { id: 'b', text: 'Start-up: Düşük Fiyat belirler | Google: Satın Alır.', correct: true },
       { id: 'c', text: 'Start-up: Yüksek Fiyat belirler | Google: Satın Alır.', correct: false },
       { id: 'd', text: 'Denge yoktur.', correct: false }
     ],
@@ -1134,9 +1134,9 @@ export const academicScenarios = [
     desc: 'Devlet önce karbon vergisi oranını belirler: "Yüksek Vergi" veya "Düşük Vergi". Ardından Çimento Fabrikası yeşil baca filtresi yatırımı yapıp yapmamaya karar verir: "Filtre Yatırımı" veya "Yatırım Yok". Devlet yüksek vergi koyarsa, fabrika filtre takarsa (Devlet: 6, Fabrika: 4), filtre takmazsa (Devlet: 4, Fabrika: 2) olur. Devlet düşük vergi koyarsa, fabrika filtre takarsa (Devlet: 3, Fabrika: 5), filtre takmazsa (Devlet: 2, Fabrika: 6) olur.',
     question: 'Devlet ve Fabrika arasındaki bu ardışık oyunun kusursuz dengesi (SPE) nedir?',
     options: [
-      { id: 'a', text: 'Devlet: Yüksek Vergi | Fabrika: Filtre Yatırımı.', correct: true },
+      { id: 'a', text: 'Devlet: Düşük Vergi | Fabrika: Filtre Yatırımı.', correct: false },
       { id: 'b', text: 'Devlet: Düşük Vergi | Fabrika: Yatırım Yok.', correct: false },
-      { id: 'c', text: 'Devlet: Düşük Vergi | Fabrika: Filtre Yatırımı.', correct: false },
+      { id: 'c', text: 'Devlet: Yüksek Vergi | Fabrika: Filtre Yatırımı.', correct: true },
       { id: 'd', text: 'Denge yoktur.', correct: false }
     ],
     academicSolution: {
@@ -1180,10 +1180,10 @@ export const academicScenarios = [
     desc: 'Bir Alıcı, gayrimenkul almak için "Kapora Ödeyebilir" (maliyeti -1) veya "Bekleyebilir". Kapora ödenirse, Satıcı evi alıcıya "Satabilir" ya da kaporanın üstüne yatıp evi başkasına "İlan Edebilir". Satarsa (Alıcı: 5, Satıcı: 4), kaporanın üstüne yatarsa (Alıcı: -1, Satıcı: 6) olur. Alıcı beklerse, satıcı evi başkasına satar ve ödemeler (0, 3) olur.',
     question: 'Bu oyunda oluşan SPE dengesi hangisidir?',
     options: [
-      { id: 'a', text: 'Alıcı: Bekler | Satıcı: (Alıcı ödeme yapsaydı kaporanın üstüne yatardı).', correct: true },
+      { id: 'a', text: 'Denge yoktur.', correct: false },
       { id: 'b', text: 'Alıcı: Kapora Öder | Satıcı: Evi Satar.', correct: false },
       { id: 'c', text: 'Alıcı: Kapora Öder | Satıcı: Kaporanın üstüne yatar.', correct: false },
-      { id: 'd', text: 'Denge yoktur.', correct: false }
+      { id: 'd', text: 'Alıcı: Bekler | Satıcı: (Alıcı ödeme yapsaydı kaporanın üstüne yatardı).', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, yasal güvencelerin ve sözleşme hukukunun olmadığı piyasalarda ticaretin nasıl durma noktasına geldiğini (market breakdown) açıklar.',
@@ -1268,8 +1268,8 @@ export const academicScenarios = [
     desc: 'Alman otomotiv devi Volkswagen, Türkiye\'deki bir yerel üreticiye yerli üretim lisansı vermeyi düşünmektedir. Önce Volkswagen teklif sunar: "Ortak Yatırım" veya "Sadece Lisans". Ortak yatırımda, yerel üretici dürüst davranırsa (VW: 8, Yerel: 6), yan çizerse (VW: 2, Yerel: 8) olur. Sadece lisansta yerel üretici dürüst davranırsa (VW: 5, Yerel: 4), yan çizerse (VW: 1, Yerel: 5) olur.',
     question: 'Geriye doğru tümevarım ile elde edilen SPE dengesi nedir?',
     options: [
-      { id: 'a', text: 'Volkswagen: Sadece Lisans sunar | Yerel Üretici: Yan Çizer.', correct: true },
-      { id: 'b', text: 'Volkswagen: Ortak Yatırım sunar | Yerel Üretici: Dürüst Davranır.', correct: false },
+      { id: 'a', text: 'Volkswagen: Ortak Yatırım sunar | Yerel Üretici: Dürüst Davranır.', correct: false },
+      { id: 'b', text: 'Volkswagen: Sadece Lisans sunar | Yerel Üretici: Yan Çizer.', correct: true },
       { id: 'c', text: 'Volkswagen: Sadece Lisans sunar | Yerel Üretici: Dürüst Davranır.', correct: false },
       { id: 'd', text: 'Denge yoktur.', correct: false }
     ],
@@ -1320,9 +1320,9 @@ export const academicScenarios = [
     actions: ['Yüksek Katkı', 'Kısıtlı Katkı'],
     question: 'Bu kamu malı katkı oyununun Nash Dengesi ve Sosyal Optimum (Pareto En İyi) noktaları hangileridir?',
     options: [
-      { id: 'a', text: 'Nash: (Kısıtlı Katkı, Kısıtlı Katkı) | Sosyal Optimum: (Yüksek Katkı, Yüksek Katkı)', correct: true },
+      { id: 'a', text: 'Nash ve Sosyal Optimum aynıdır: (Yüksek Katkı, Yüksek Katkı).', correct: false },
       { id: 'b', text: 'Nash: (Yüksek Katkı, Yüksek Katkı) | Sosyal Optimum: (Kısıtlı Katkı, Kısıtlı Katkı)', correct: false },
-      { id: 'c', text: 'Nash ve Sosyal Optimum aynıdır: (Yüksek Katkı, Yüksek Katkı).', correct: false },
+      { id: 'c', text: 'Nash: (Kısıtlı Katkı, Kısıtlı Katkı) | Sosyal Optimum: (Yüksek Katkı, Yüksek Katkı)', correct: true },
       { id: 'd', text: 'Nash dengesi yoktur.', correct: false }
     ],
     academicSolution: {
@@ -1350,10 +1350,10 @@ export const academicScenarios = [
     actions: ['Az Avlan (Sürdürülebilir)', 'Çok Avlan (Aşırı)'],
     question: 'Bu oyunda oluşan Nash dengesi ve Pareto etkin olmayan sosyal açmaz nedir?',
     options: [
-      { id: 'a', text: 'Nash dengesi: (Çok Avlan, Çok Avlan). Bu durum bireysel rasyonelliğin ortak kaynağı tükettiği bir "Ortak Kaynakların Trajedisi"dir.', correct: true },
+      { id: 'a', text: 'Nash dengeleri: (Az Avlan, Çok Avlan) ve (Çok Avlan, Az Avlan).', correct: false },
       { id: 'b', text: 'Nash dengesi: (Az Avlan, Az Avlan). Çevre korunur.', correct: false },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
-      { id: 'd', text: 'Nash dengeleri: (Az Avlan, Çok Avlan) ve (Çok Avlan, Az Avlan).', correct: false }
+      { id: 'd', text: 'Nash dengesi: (Çok Avlan, Çok Avlan). Bu durum bireysel rasyonelliğin ortak kaynağı tükettiği bir "Ortak Kaynakların Trajedisi"dir.', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu senaryo, Garrett Hardin\'in ünlü "Ortak Kaynakların Trajedisi" (Tragedy of the Commons) kavramının oyun teorisindeki karşılığıdır.',
@@ -1414,8 +1414,8 @@ export const academicScenarios = [
     actions: ['Çalışanları Aşıla', 'Kendi Hallerine Bırak (Bekle)'],
     question: 'Bu oyunda hangi hücreler Nash dengesidir ve bu durum hangi kamu malı oyununa örnektir?',
     options: [
-      { id: 'a', text: 'Nash dengeleri: (Aşıla, Bekle) ve (Bekle, Aşıla). Bu bir "Katkı Eşiği" kamu malı oyunudur.', correct: true },
-      { id: 'b', text: 'Tek Nash dengesi vardır: (Bekle, Bekle).', correct: false },
+      { id: 'a', text: 'Tek Nash dengesi vardır: (Bekle, Bekle).', correct: false },
+      { id: 'b', text: 'Nash dengeleri: (Aşıla, Bekle) ve (Bekle, Aşıla). Bu bir "Katkı Eşiği" kamu malı oyunudur.', correct: true },
       { id: 'c', text: 'Tek Nash dengesi vardır: (Aşıla, Aşıla).', correct: false },
       { id: 'd', text: 'Nash dengesi yoktur.', correct: false }
     ],
@@ -1446,9 +1446,9 @@ export const academicScenarios = [
     actions: ['Gece Teslimatı (Uyum)', 'Gündüz Teslimatı (Yoğunluk)'],
     question: 'Bu kentsel lojistik oyununda Nash dengesi nedir?',
     options: [
-      { id: 'a', text: '(Gündüz Teslimatı, Gündüz Teslimatı)', correct: true },
+      { id: 'a', text: 'Nash dengesi yoktur.', correct: false },
       { id: 'b', text: '(Gece Teslimatı, Gece Teslimatı)', correct: false },
-      { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
+      { id: 'c', text: '(Gündüz Teslimatı, Gündüz Teslimatı)', correct: true },
       { id: 'd', text: '(Gece Teslimatı, Gündüz Teslimatı)', correct: false }
     ],
     academicSolution: {
@@ -1478,10 +1478,10 @@ export const academicScenarios = [
     actions: ['Yüksek Bütçe', 'Düşük Bütçe'],
     question: 'Bu yerel yönetim oyununun Nash dengesi nedir?',
     options: [
-      { id: 'a', text: '(Düşük Bütçe, Düşük Bütçe)', correct: true },
+      { id: 'a', text: '(Yüksek Bütçe, Düşük Bütçe)', correct: false },
       { id: 'b', text: '(Yüksek Bütçe, Yüksek Bütçe)', correct: false },
       { id: 'c', text: 'Nash dengesi yoktur.', correct: false },
-      { id: 'd', text: '(Yüksek Bütçe, Düşük Bütçe)', correct: false }
+      { id: 'd', text: '(Düşük Bütçe, Düşük Bütçe)', correct: true }
     ],
     academicSolution: {
       interpretation: 'Bu oyun, yerel yönetimlerin ortak kamusal altyapı yatırımlarında karşılaştığı bedavacılık ve koordinasyon başarısızlığı problemidir.',

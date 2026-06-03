@@ -2,29 +2,29 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle, Info, Star, Award, Shield, ArrowRight } from 'lucide-react';
 
-export const AcademicVisualizer = ({ scenario }) => {
+export const AcademicVisualizer = ({ scenario, isRevealed = false, userAnswer = null }) => {
   if (!scenario) return null;
-  const { visualData, matrix, actions, actionsPlayerB, question } = scenario;
+  const { visualData } = scenario;
   const type = visualData?.type || 'matrix';
 
   switch (type) {
     case 'matrix':
-      return <MatrixVisualizer scenario={scenario} />;
+      return <MatrixVisualizer scenario={scenario} isRevealed={isRevealed} userAnswer={userAnswer} />;
     case 'mixed':
-      return <MixedStrategyPlot scenario={scenario} />;
+      return <MixedStrategyPlot scenario={scenario} isRevealed={isRevealed} />;
     case 'tree':
-      return <GameTreeDiagram scenario={scenario} />;
+      return <GameTreeDiagram scenario={scenario} isRevealed={isRevealed} />;
     case 'cournot':
-      return <IOReactionCurves scenario={scenario} />;
+      return <IOReactionCurves scenario={scenario} isRevealed={isRevealed} />;
     case 'public':
-      return <PublicGoodsBar scenario={scenario} />;
+      return <PublicGoodsBar scenario={scenario} isRevealed={isRevealed} />;
     default:
       return null;
   }
 };
 
 // 1. GELİŞMİŞ MATRİS GÖRSELLEŞTİRİCİ
-const MatrixVisualizer = ({ scenario }) => {
+const MatrixVisualizer = ({ scenario, isRevealed, userAnswer }) => {
   const { matrix, actions, actionsPlayerB, visualData } = scenario;
   const brA = visualData?.brA || [];
   const brB = visualData?.brB || [];
@@ -32,6 +32,7 @@ const MatrixVisualizer = ({ scenario }) => {
   const actB = actionsPlayerB || actions; // B'nin stratejileri yoksa A ile aynı kabul edilir
 
   const checkIsBR = (player, r, c) => {
+    if (!isRevealed) return false;
     if (player === 'A') {
       return brA.some(cell => cell[0] === r && cell[1] === c);
     }
@@ -39,7 +40,18 @@ const MatrixVisualizer = ({ scenario }) => {
   };
 
   const checkIsNash = (r, c) => {
+    if (!isRevealed) return false;
     return nashCells.some(cell => cell[0] === r && cell[1] === c);
+  };
+
+  const checkIsWrongCell = (r, c) => {
+    if (!isRevealed || !userAnswer || userAnswer.correct) return false;
+    const text = userAnswer.text || '';
+    const pairStr1 = `(${actions[r]}, ${actB[c]})`;
+    const pairStr2 = `${actions[r]}, ${actB[c]}`;
+    const mentionsCell = text.includes(pairStr1) || text.includes(pairStr2);
+    const isNash = nashCells.some(cell => cell[0] === r && cell[1] === c);
+    return mentionsCell && !isNash;
   };
 
   return (
@@ -64,35 +76,52 @@ const MatrixVisualizer = ({ scenario }) => {
 
         {/* Row 2 */}
         <div style={rowLabel}>{actions[0]}</div>
-        <Cell r={0} c={0} matrix={matrix} isNash={checkIsNash(0, 0)} isBrA={checkIsBR('A', 0, 0)} isBrB={checkIsBR('B', 0, 0)} />
-        <Cell r={0} c={1} matrix={matrix} isNash={checkIsNash(0, 1)} isBrA={checkIsBR('A', 0, 1)} isBrB={checkIsBR('B', 0, 1)} />
+        <Cell r={0} c={0} matrix={matrix} isNash={checkIsNash(0, 0)} isWrong={checkIsWrongCell(0, 0)} isBrA={checkIsBR('A', 0, 0)} isBrB={checkIsBR('B', 0, 0)} />
+        <Cell r={0} c={1} matrix={matrix} isNash={checkIsNash(0, 1)} isWrong={checkIsWrongCell(0, 1)} isBrA={checkIsBR('A', 0, 1)} isBrB={checkIsBR('B', 0, 1)} />
 
         {/* Row 3 */}
         <div style={rowLabel}>{actions[1]}</div>
-        <Cell r={1} c={0} matrix={matrix} isNash={checkIsNash(1, 0)} isBrA={checkIsBR('A', 1, 0)} isBrB={checkIsBR('B', 1, 0)} />
-        <Cell r={1} c={1} matrix={matrix} isNash={checkIsNash(1, 1)} isBrA={checkIsBR('A', 1, 1)} isBrB={checkIsBR('B', 1, 1)} />
+        <Cell r={1} c={0} matrix={matrix} isNash={checkIsNash(1, 0)} isWrong={checkIsWrongCell(1, 0)} isBrA={checkIsBR('A', 1, 0)} isBrB={checkIsBR('B', 1, 0)} />
+        <Cell r={1} c={1} matrix={matrix} isNash={checkIsNash(1, 1)} isWrong={checkIsWrongCell(1, 1)} isBrA={checkIsBR('A', 1, 1)} isBrB={checkIsBR('B', 1, 1)} />
       </div>
     </div>
   );
 };
 
-const Cell = ({ r, c, matrix, isNash, isBrA, isBrB }) => {
+const Cell = ({ r, c, matrix, isNash, isWrong, isBrA, isBrB }) => {
   const payA = matrix[r][c][0];
   const payB = matrix[r][c][1];
+
+  let borderColor = 'var(--glass-border)';
+  let background = 'rgba(255,255,255,0.02)';
+  let boxShadow = 'none';
+
+  if (isNash) {
+    borderColor = '#10b981';
+    background = 'rgba(16, 185, 129, 0.12)';
+    boxShadow = '0 0 15px rgba(16, 185, 129, 0.2)';
+  } else if (isWrong) {
+    borderColor = '#ef4444';
+    background = 'rgba(239, 68, 68, 0.12)';
+    boxShadow = '0 0 15px rgba(239, 68, 68, 0.2)';
+  }
 
   return (
     <motion.div 
       whileHover={{ scale: 1.02 }}
       style={{
         ...cellStyle,
-        borderColor: isNash ? '#10b981' : 'var(--glass-border)',
-        background: isNash ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255,255,255,0.02)',
-        boxShadow: isNash ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none',
+        borderColor,
+        background,
+        boxShadow,
         position: 'relative'
       }}
     >
       {isNash && (
         <span style={nashBadge}>NE</span>
+      )}
+      {isWrong && (
+        <span style={{ ...nashBadge, background: '#ef4444' }}>Hata</span>
       )}
       <div style={{ display: 'flex', gap: '8px', fontSize: '1.25rem', fontWeight: 800 }}>
         {/* Player A Payoff */}
@@ -115,7 +144,7 @@ const Cell = ({ r, c, matrix, isNash, isBrA, isBrB }) => {
 };
 
 // 2. KARMA STRATEJİ SVG GRAFİĞİ (Best Response step-functions)
-const MixedStrategyPlot = ({ scenario }) => {
+const MixedStrategyPlot = ({ scenario, isRevealed }) => {
   const { actions } = scenario;
   const eq = scenario.visualData?.mixedEq || { p: 0.5, q: 0.5 };
   const p = eq.p;
@@ -163,7 +192,7 @@ const MixedStrategyPlot = ({ scenario }) => {
           <path 
             d={`M ${toSvgX(0)} ${toSvgY(1)} L ${toSvgX(q)} ${toSvgY(1)} L ${toSvgX(q)} ${toSvgY(0)} L ${toSvgX(1)} ${toSvgY(0)}`}
             fill="none"
-            stroke="#10b981"
+            stroke={isRevealed ? "#10b981" : "rgba(255,255,255,0.2)"}
             strokeWidth="3"
           />
 
@@ -172,32 +201,46 @@ const MixedStrategyPlot = ({ scenario }) => {
           <path 
             d={`M ${toSvgX(0)} ${toSvgY(0)} L ${toSvgX(0)} ${toSvgY(p)} L ${toSvgX(1)} ${toSvgY(p)} L ${toSvgX(1)} ${toSvgY(1)}`}
             fill="none"
-            stroke="#fbbf24"
+            stroke={isRevealed ? "#fbbf24" : "rgba(255,255,255,0.15)"}
             strokeWidth="3"
           />
 
           {/* Equilibrium helper lines */}
-          <line x1="50" y1={toSvgY(p)} x2={toSvgX(q)} y2={toSvgY(p)} stroke="rgba(255,255,255,0.2)" strokeDasharray="3" />
-          <line x1={toSvgX(q)} y1="250" x2={toSvgX(q)} y2={toSvgY(p)} stroke="rgba(255,255,255,0.2)" strokeDasharray="3" />
+          {isRevealed && (
+            <>
+              <line x1="50" y1={toSvgY(p)} x2={toSvgX(q)} y2={toSvgY(p)} stroke="rgba(255,255,255,0.2)" strokeDasharray="3" />
+              <line x1={toSvgX(q)} y1="250" x2={toSvgX(q)} y2={toSvgY(p)} stroke="rgba(255,255,255,0.2)" strokeDasharray="3" />
+            </>
+          )}
 
           {/* Intersection (Nash Equilibrium) */}
-          <circle cx={toSvgX(q)} cy={toSvgY(p)} r="6" fill="#ef4444" stroke="white" strokeWidth="2" />
+          {isRevealed && (
+            <circle cx={toSvgX(q)} cy={toSvgY(p)} r="6" fill="#ef4444" stroke="white" strokeWidth="2" />
+          )}
           
           {/* Eq Label text */}
-          <text x={toSvgX(q) + 10} y={toSvgY(p) - 10} fill="white" fontSize="10" fontWeight="bold" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>
-            NE ({p}, {q})
-          </text>
+          {isRevealed && (
+            <text x={toSvgX(q) + 10} y={toSvgY(p) - 10} fill="white" fontSize="10" fontWeight="bold" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>
+              NE ({p}, {q})
+            </text>
+          )}
         </svg>
       </div>
-      <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-        Sinyal Karışımı: P1 en yüksek fayda için {actions[0]}\'i %{Math.round(p*100)}, P2 ise {scenario.actionsPlayerB ? scenario.actionsPlayerB[0] : actions[0]}\'i %{Math.round(q*100)} olasılıkla seçmelidir.
-      </div>
+      {isRevealed ? (
+        <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+          Sinyal Karışımı: P1 en yüksek fayda için {actions[0]} hamlesini %{Math.round(p*100)}, P2 ise {scenario.actionsPlayerB ? scenario.actionsPlayerB[0] : actions[0]} hamlesini %{Math.round(q*100)} olasılıkla seçmelidir.
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+          Karma strateji analiz grafikleri soru çözüldükten sonra detaylandırılacaktır.
+        </div>
+      )}
     </div>
   );
 };
 
 // 3. ARDIŞIK OYUNLAR İÇİN DİNAMİK OYUN AĞACI (Game Tree)
-const GameTreeDiagram = ({ scenario }) => {
+const GameTreeDiagram = ({ scenario, isRevealed }) => {
   const tree = scenario.visualData?.treeNodes || { nodes: [], edges: [] };
   const nodes = tree.nodes || [];
   const edges = tree.edges || [];
@@ -205,12 +248,14 @@ const GameTreeDiagram = ({ scenario }) => {
   return (
     <div style={containerStyle}>
       <div style={labelHeader}>ARDIŞIK KARAR AĞACI & SPE</div>
-      <div style={legendStyle}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#fbbf24' }}>
-          <span style={{ display: 'inline-block', width: '20px', height: '4px', background: '#fbbf24', borderRadius: '2px' }}></span>
-          SPE Dengesi (Geriye Doğru Tümevarım Yolu)
-        </span>
-      </div>
+      {isRevealed && (
+        <div style={legendStyle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#fbbf24' }}>
+            <span style={{ display: 'inline-block', width: '20px', height: '4px', background: '#fbbf24', borderRadius: '2px' }}></span>
+            SPE Dengesi (Geriye Doğru Tümevarım Yolu)
+          </span>
+        </div>
+      )}
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
         <svg width="400" height="320" style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px' }}>
@@ -229,6 +274,8 @@ const GameTreeDiagram = ({ scenario }) => {
             const toNode = nodes.find(n => n.id === edge.to);
             if (!fromNode || !toNode) return null;
 
+            const isSpePath = isRevealed && edge.isSpe;
+
             return (
               <g key={`edge-${idx}`}>
                 <line 
@@ -236,20 +283,20 @@ const GameTreeDiagram = ({ scenario }) => {
                   y1={fromNode.y} 
                   x2={toNode.x} 
                   y2={toNode.y} 
-                  stroke={edge.isSpe ? '#fbbf24' : 'rgba(255,255,255,0.15)'} 
-                  strokeWidth={edge.isSpe ? '4' : '2'}
+                  stroke={isSpePath ? '#fbbf24' : 'rgba(255,255,255,0.15)'} 
+                  strokeWidth={isSpePath ? '4' : '2'}
                   style={{
-                    filter: edge.isSpe ? 'drop-shadow(0 0 5px rgba(251, 191, 36, 0.6))' : 'none'
+                    filter: isSpePath ? 'drop-shadow(0 0 5px rgba(251, 191, 36, 0.6))' : 'none'
                   }}
-                  markerEnd={edge.isSpe ? 'url(#arrow-spe)' : 'url(#arrow)'}
+                  markerEnd={isSpePath ? 'url(#arrow-spe)' : 'url(#arrow)'}
                 />
                 {/* Edge Label */}
                 <text 
                   x={(fromNode.x + toNode.x) / 2} 
                   y={(fromNode.y + toNode.y) / 2 - 8} 
-                  fill={edge.isSpe ? '#fbbf24' : 'var(--text-secondary)'} 
+                  fill={isSpePath ? '#fbbf24' : 'var(--text-secondary)'} 
                   fontSize="10" 
-                  fontWeight={edge.isSpe ? 'bold' : 'normal'}
+                  fontWeight={isSpePath ? 'bold' : 'normal'}
                   textAnchor="middle"
                 >
                   {edge.label}
@@ -309,14 +356,14 @@ const GameTreeDiagram = ({ scenario }) => {
         </svg>
       </div>
       <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-        Düğümler karar noktalarını, uçlardaki koordinatlar ise sırasıyla (P1, P2) ödemelerini gösterir. Alt oyun kusursuz dengesi kalın sarı renkle parlatılmıştır.
+        Düğümler karar noktalarını, uçlardaki koordinatlar ise sırasıyla (P1, P2) ödemelerini gösterir. {isRevealed && "Alt oyun kusursuz dengesi kalın sarı renkle parlatılmıştır."}
       </div>
     </div>
   );
 };
 
 // 4. ENDÜSTRİYEL ORGANİZASYON - TEPKİ EĞRİLERİ (Cournot / Stackelberg)
-const IOReactionCurves = ({ scenario }) => {
+const IOReactionCurves = ({ scenario, isRevealed }) => {
   const data = scenario.visualData?.cournotData || { a: 30, c: 6, eq: [8, 8], monopoly: [6, 6] };
   const { a, c, eq, monopoly } = data;
   
@@ -375,33 +422,58 @@ const IOReactionCurves = ({ scenario }) => {
           />
 
           {/* Intersection - Cournot-Nash Equilibrium */}
-          <circle cx={toSvgX(eq[0])} cy={toSvgY(eq[1])} r="6" fill="#10b981" stroke="white" strokeWidth="2" />
-          <text x={toSvgX(eq[0]) + 10} y={toSvgY(eq[1]) - 10} fill="white" fontSize="9" fontWeight="bold">
-            Nash ({eq[0]}, {eq[1]})
-          </text>
+          {isRevealed && (
+            <>
+              <circle cx={toSvgX(eq[0])} cy={toSvgY(eq[1])} r="6" fill="#10b981" stroke="white" strokeWidth="2" />
+              <text x={toSvgX(eq[0]) + 10} y={toSvgY(eq[1]) - 10} fill="white" fontSize="9" fontWeight="bold">
+                Nash ({eq[0]}, {eq[1]})
+              </text>
+            </>
+          )}
 
           {/* Monopoly / Cartel point */}
-          <circle cx={toSvgX(monopoly[0])} cy={toSvgY(monopoly[1])} r="5" fill="#f59e0b" stroke="white" strokeWidth="1" />
-          <text x={toSvgX(monopoly[0]) - 40} y={toSvgY(monopoly[1]) + 15} fill="#fbbf24" fontSize="9" fontWeight="bold">
-            Kartel ({monopoly[0]}, {monopoly[1]})
-          </text>
+          {isRevealed && (
+            <>
+              <circle cx={toSvgX(monopoly[0])} cy={toSvgY(monopoly[1])} r="5" fill="#f59e0b" stroke="white" strokeWidth="1" />
+              <text x={toSvgX(monopoly[0]) - 40} y={toSvgY(monopoly[1]) + 15} fill="#fbbf24" fontSize="9" fontWeight="bold">
+                Kartel ({monopoly[0]}, {monopoly[1]})
+              </text>
+            </>
+          )}
 
           {/* Labels for Axis intercepts */}
           <text x="35" y={toSvgY(maxQty / 2)} fill="var(--text-muted)" fontSize="8">{(maxQty / 2)}</text>
           <text x={toSvgX(maxQty / 2) - 10} y="265" fill="var(--text-muted)" fontSize="8">{(maxQty / 2)}</text>
         </svg>
       </div>
-      <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-        Firmaların optimal üretim reaksiyon doğrularıdır. Yeşil nokta Cournot-Nash dengesini (istikrarlı), turuncu ise toplam kârı maksimize eden (verimli ama istikrarsız) kartel noktasını temsil eder.
-      </div>
+      {isRevealed ? (
+        <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+          Firmaların optimal üretim reaksiyon doğrularıdır. Yeşil nokta Cournot-Nash dengesini (istikrarlı), turuncu ise toplam kârı maksimize eden (verimli ama istikrarsız) kartel noktasını temsil eder.
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+          Tepki eğrilerinin kesişimi ve optimal üretim miktarları soru çözüldükten sonra gösterilecektir.
+        </div>
+      )}
     </div>
   );
 };
 
 // 5. KAMU EKONOMİSİ - REFAH / VERİMLİLİK BARI (Public Goods / Commons)
-const PublicGoodsBar = ({ scenario }) => {
+const PublicGoodsBar = ({ scenario, isRevealed }) => {
   const data = scenario.visualData?.publicData || { nash: 0, socialOptimum: 2 };
   
+  if (!isRevealed) {
+    return (
+      <div style={containerStyle}>
+        <div style={labelHeader}>TOPLUMSAL REFAH VE VERİMLİLİK BARI</div>
+        <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', border: '1px dashed var(--glass-border)', borderRadius: '12px', background: 'rgba(0,0,0,0.1)' }}>
+          Toplumsal refah analizi grafikleri soru çözüldükten sonra görüntülenecektir.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={containerStyle}>
       <div style={labelHeader}>TOPLUMSAL REFAH VE VERİMLİLİK BARI</div>

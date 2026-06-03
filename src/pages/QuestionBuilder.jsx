@@ -18,16 +18,91 @@ const QuestionBuilder = ({ title: initialTitle, subtitle: initialSubtitle }) => 
   const [qData, setQData] = useState({
     title: '',
     desc: '',
+    question: '',
     difficulty: 'Orta',
     category: isLessonMode ? 'Kuramsal' : (isQuizMode ? 'Test' : 'Senaryo'),
     reward: '250 XP',
     matrix: [[[0,0],[0,0]], [[0,0],[0,0]]],
     explanation: '',
+    options: [
+      { id: 'a', text: '', correct: false },
+      { id: 'b', text: '', correct: false },
+      { id: 'c', text: '', correct: false },
+      { id: 'd', text: '', correct: false }
+    ],
+    correctAnswer: '',
     teacherId: user?.email,
     id: Date.now()
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const updateOptionText = (id, text) => {
+    const nextOptions = qData.options.map(opt => 
+      opt.id === id ? { ...opt, text } : opt
+    );
+    setQData({ ...qData, options: nextOptions });
+  };
+
+  const selectCorrectAnswer = (val) => {
+    const nextOptions = qData.options.map(opt => ({
+      ...opt,
+      correct: opt.id === val
+    }));
+    setQData({ ...qData, correctAnswer: val, options: nextOptions });
+  };
+
+  const calculateVisualData = (matrix) => {
+    const brA = [];
+    const brB = [];
+    const nashCells = [];
+
+    // Find Best Responses for Player A (rows)
+    for (let c = 0; c < 2; c++) {
+      const val0 = matrix[0][c][0];
+      const val1 = matrix[1][c][0];
+      if (val0 > val1) {
+        brA.push([0, c]);
+      } else if (val1 > val0) {
+        brA.push([1, c]);
+      } else {
+        brA.push([0, c]);
+        brA.push([1, c]);
+      }
+    }
+
+    // Find Best Responses for Player B (columns)
+    for (let r = 0; r < 2; r++) {
+      const val0 = matrix[r][0][1];
+      const val1 = matrix[r][1][1];
+      if (val0 > val1) {
+        brB.push([r, 0]);
+      } else if (val1 > val0) {
+        brB.push([r, 1]);
+      } else {
+        brB.push([r, 0]);
+        brB.push([r, 1]);
+      }
+    }
+
+    // Find Nash Equilibria
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < 2; c++) {
+        const isBrA = brA.some(cell => cell[0] === r && cell[1] === c);
+        const isBrB = brB.some(cell => cell[0] === r && cell[1] === c);
+        if (isBrA && isBrB) {
+          nashCells.push([r, c]);
+        }
+      }
+    }
+
+    return {
+      type: 'matrix',
+      brA,
+      brB,
+      nashCells
+    };
+  };
 
   const handleSave = () => {
     if (!qData.title || !qData.desc) {
@@ -35,11 +110,29 @@ const QuestionBuilder = ({ title: initialTitle, subtitle: initialSubtitle }) => 
       return;
     }
 
+    if (!isLessonMode) {
+      if (!qData.question) {
+        alert('Lütfen soru cümlesini giriniz.');
+        return;
+      }
+      if (qData.options.some(opt => !opt.text.trim())) {
+        alert('Lütfen tüm seçenekleri (A, B, C, D) doldurunuz.');
+        return;
+      }
+      if (!qData.correctAnswer) {
+        alert('Lütfen doğru seçeneği işaretleyiniz.');
+        return;
+      }
+    }
+
     const storageKey = isLessonMode ? 'nashlab_custom_lessons' : 'nashlab_custom_questions';
     const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
     
+    const visualData = !isLessonMode ? calculateVisualData(qData.matrix) : null;
+
     const newContent = { 
       ...qData, 
+      visualData,
       id: Date.now(),
       teacherId: user?.email,
       author: 'Öğretmen'
@@ -56,7 +149,7 @@ const QuestionBuilder = ({ title: initialTitle, subtitle: initialSubtitle }) => 
   };
 
   const updateMatrix = (r, c, p, v) => {
-    const next = [...qData.matrix];
+    const next = [...qData.matrix.map(row => row.map(cell => [...cell]))];
     next[r][c][p] = parseInt(v) || 0;
     setQData({ ...qData, matrix: next });
   };
@@ -91,25 +184,66 @@ const QuestionBuilder = ({ title: initialTitle, subtitle: initialSubtitle }) => 
              </div>
 
              {!isLessonMode && (
-               <div style={{ marginBottom: '1.5rem' }}>
-                  <label style={labelStyle}>Payoff Matrix (Ödeme Matrisi)</label>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Sırasıyla Oyuncu A ve Oyuncu B'nin kazançlarını girin.</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', background: 'rgba(0,0,0,0.1)', padding: '1.5rem', borderRadius: '15px' }}>
-                    {[0, 1].map(r => [0, 1].map(c => (
-                      <div key={`${r}-${c}`} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '10px', border: '1px solid var(--glass-border)' }}>
-                         <div style={{ textAlign: 'center' }}>
-                            <div style={pLabel}>A</div>
-                            <input type="number" style={cellIn} value={qData.matrix[r][c][0]} onChange={(e) => updateMatrix(r, c, 0, e.target.value)} />
-                         </div>
-                         <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }}></div>
-                         <div style={{ textAlign: 'center' }}>
-                            <div style={pLabel}>B</div>
-                            <input type="number" style={cellIn} value={qData.matrix[r][c][1]} onChange={(e) => updateMatrix(r, c, 1, e.target.value)} />
-                         </div>
-                      </div>
-                    )))}
-                  </div>
-               </div>
+               <>
+                 <div style={{ marginBottom: '1.5rem' }}>
+                   <label style={labelStyle}>Soru Cümlesi</label>
+                   <input 
+                     value={qData.question} 
+                     onChange={(e) => setQData({...qData, question: e.target.value})} 
+                     type="text" 
+                     placeholder="Örn: Bu oyunda saf strateji Nash dengesi hangisidir?" 
+                     style={inputStyle} 
+                   />
+                 </div>
+
+                 <div style={{ marginBottom: '1.5rem' }}>
+                   <label style={labelStyle}>Payoff Matrix (Ödeme Matrisi)</label>
+                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Sırasıyla Oyuncu A ve Oyuncu B'nin kazançlarını girin.</p>
+                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', background: 'rgba(0,0,0,0.1)', padding: '1.5rem', borderRadius: '15px' }}>
+                     {[0, 1].map(r => [0, 1].map(c => (
+                       <div key={`${r}-${c}`} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '10px', border: '1px solid var(--glass-border)' }}>
+                          <div style={{ textAlign: 'center' }}>
+                             <div style={pLabel}>A</div>
+                             <input type="number" style={cellIn} value={qData.matrix[r][c][0]} onChange={(e) => updateMatrix(r, c, 0, e.target.value)} />
+                          </div>
+                          <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }}></div>
+                          <div style={{ textAlign: 'center' }}>
+                             <div style={pLabel}>B</div>
+                             <input type="number" style={cellIn} value={qData.matrix[r][c][1]} onChange={(e) => updateMatrix(r, c, 1, e.target.value)} />
+                          </div>
+                       </div>
+                     )))}
+                   </div>
+                 </div>
+
+                 <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={labelStyle}>Soru Seçenekleri (A, B, C, D)</label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Her bir şıkkın metnini girin ve yanındaki radyo butonunu kullanarak doğru cevabı işaretleyin.</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {qData.options.map((opt) => (
+                        <div key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '10px 15px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <input 
+                              type="radio" 
+                              name="correctAnswer" 
+                              checked={qData.correctAnswer === opt.id}
+                              onChange={() => selectCorrectAnswer(opt.id)}
+                              style={{ cursor: 'pointer', width: '18px', height: '18px', accentColor: 'var(--accent-blue)' }} 
+                            />
+                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-secondary)' }}>{opt.id.toUpperCase()}</span>
+                          </div>
+                          <input 
+                            type="text" 
+                            placeholder={`${opt.id.toUpperCase()} şıkkının metnini yazın...`} 
+                            value={opt.text} 
+                            onChange={(e) => updateOptionText(opt.id, e.target.value)} 
+                            style={{ ...inputStyle, padding: '0.5rem 0.75rem' }} 
+                          />
+                        </div>
+                      ))}
+                    </div>
+                 </div>
+               </>
              )}
 
              <div style={{ marginBottom: '1rem' }}>

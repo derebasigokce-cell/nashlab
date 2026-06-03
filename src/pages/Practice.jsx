@@ -50,12 +50,15 @@ const Practice = () => {
       author: 'Öğretmen',
       // Map custom teacher questions safely
       matrix: s.matrix || [[[0,0],[0,0]],[[0,0],[0,0]]],
+      question: s.question || 'Bu oyunda Nash dengesi ve rasyonel davranışlar nedir?',
       options: s.options || [
-        { id: 'a', text: 'Strateji A (İşbirliği)', correct: true },
-        { id: 'b', text: 'Strateji B (Rekabet)', correct: false }
+        { id: 'a', text: 'Strateji A (İşbirliği)', correct: s.correctAnswer === 'a' },
+        { id: 'b', text: 'Strateji B (Rekabet)', correct: s.correctAnswer === 'b' },
+        { id: 'c', text: 'Strateji C (Farklılaşma)', correct: s.correctAnswer === 'c' },
+        { id: 'd', text: 'Strateji D (Sapma)', correct: s.correctAnswer === 'd' }
       ],
       academicSolution: {
-        interpretation: s.desc,
+        interpretation: s.explanation || s.desc,
         players: 'Eğitmen tarafından belirtilen iki oyuncu.',
         dominant: 'Bu özel soru için dominant stratejileri kendiniz analiz ediniz.',
         bestResponse: 'En iyi tepkiler matris verilerinden bulunabilir.',
@@ -63,7 +66,7 @@ const Practice = () => {
         pareto: 'Sosyal optimum ile Nash kıyaslaması.',
         economicComment: 'İlgili durumun sektörel/ekonomik yansıması.'
       },
-      visualData: {
+      visualData: s.visualData || {
         type: 'matrix',
         brA: [[0, 0]],
         brB: [[0, 0]],
@@ -82,6 +85,7 @@ const Practice = () => {
   const handleEvaluate = () => {
     if (!answer) return;
     setIsEvaluated(true);
+    setShowSolution(true); // Automatically open solution
     if (answer.correct) {
       updateProgression(parseInt(current.reward) || 200, null, current.id, current.category || 'staticGames');
     }
@@ -247,7 +251,11 @@ const Practice = () => {
                         {/* Embed the Dynamic Academic Visualizer */}
                         {current.visualData && (
                           <div style={{ margin: '1.5rem 0' }}>
-                            <AcademicVisualizer scenario={current} />
+                            <AcademicVisualizer 
+                              scenario={current} 
+                              isRevealed={isEvaluated || showSolution} 
+                              userAnswer={answer} 
+                            />
                           </div>
                         )}
 
@@ -258,30 +266,75 @@ const Practice = () => {
 
                         {/* Options */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                           {current.options.map(opt => (
-                              <button 
-                                key={opt.id}
-                                onClick={(e) => { e.preventDefault(); onOptionClick(opt); }}
-                                style={{ 
-                                  ...optionBtn, 
-                                  borderColor: answer?.id === opt.id ? 'var(--accent-blue)' : 'var(--glass-border)',
-                                  background: answer?.id === opt.id ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)',
-                                  opacity: isEvaluated && answer?.id !== opt.id ? 0.6 : 1,
-                                  cursor: isEvaluated ? 'default' : 'pointer'
-                                }}
-                              >
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                    <div style={{ 
-                                       width: '28px', height: '28px', borderRadius: '50%', border: '2px solid',
-                                       borderColor: answer?.id === opt.id ? 'var(--accent-blue)' : 'rgba(255,255,255,0.2)',
-                                       display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700
-                                    }}>
-                                       {opt.id.toUpperCase()}
-                                    </div>
-                                    <span style={{ fontSize: '0.95rem' }}>{opt.text}</span>
-                                 </div>
-                              </button>
-                           ))}
+                           {current.options.map(opt => {
+                              const isSelected = answer?.id === opt.id;
+                              const isCorrect = opt.correct;
+                              let btnBorderColor = 'var(--glass-border)';
+                              let btnBackground = 'rgba(255,255,255,0.02)';
+                              let btnOpacity = 1;
+                              let circleBorderColor = 'rgba(255,255,255,0.2)';
+                              let circleTextColor = 'white';
+
+                              if (!isEvaluated) {
+                                btnBorderColor = isSelected ? 'var(--accent-blue)' : 'var(--glass-border)';
+                                btnBackground = isSelected ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)';
+                                circleBorderColor = isSelected ? 'var(--accent-blue)' : 'rgba(255,255,255,0.2)';
+                                circleTextColor = isSelected ? 'var(--accent-blue)' : 'white';
+                              } else {
+                                if (isSelected) {
+                                  if (isCorrect) {
+                                    btnBorderColor = '#10b981';
+                                    btnBackground = 'rgba(16, 185, 129, 0.12)';
+                                    circleBorderColor = '#10b981';
+                                    circleTextColor = '#10b981';
+                                  } else {
+                                    btnBorderColor = '#ef4444';
+                                    btnBackground = 'rgba(239, 68, 68, 0.12)';
+                                    circleBorderColor = '#ef4444';
+                                    circleTextColor = '#ef4444';
+                                  }
+                                } else {
+                                  if (isCorrect) {
+                                    btnBorderColor = '#10b981';
+                                    btnBackground = 'rgba(16, 185, 129, 0.05)';
+                                    circleBorderColor = '#10b981';
+                                    circleTextColor = '#10b981';
+                                  } else {
+                                    btnBorderColor = 'var(--glass-border)';
+                                    btnBackground = 'rgba(255,255,255,0.01)';
+                                    btnOpacity = 0.5;
+                                    circleBorderColor = 'rgba(255,255,255,0.1)';
+                                    circleTextColor = 'var(--text-muted)';
+                                  }
+                                }
+                              }
+
+                              return (
+                                <button 
+                                  key={opt.id}
+                                  onClick={(e) => { e.preventDefault(); onOptionClick(opt); }}
+                                  style={{ 
+                                    ...optionBtn, 
+                                    borderColor: btnBorderColor,
+                                    background: btnBackground,
+                                    opacity: btnOpacity,
+                                    cursor: isEvaluated ? 'default' : 'pointer'
+                                  }}
+                                >
+                                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                      <div style={{ 
+                                         width: '28px', height: '28px', borderRadius: '50%', border: '2px solid',
+                                         borderColor: circleBorderColor,
+                                         color: circleTextColor,
+                                         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700
+                                      }}>
+                                         {opt.id.toUpperCase()}
+                                      </div>
+                                      <span style={{ fontSize: '0.95rem', color: isEvaluated && isCorrect ? '#10b981' : 'white' }}>{opt.text}</span>
+                                   </div>
+                                </button>
+                              );
+                           })}
                         </div>
 
                         {/* Action buttons */}
