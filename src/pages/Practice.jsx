@@ -651,7 +651,7 @@ const Practice = () => {
             </div>
 
             {/* Main Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
+            <div className="practice-list-grid">
               {/* Question list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 {(filteredScenarios || []).length > 0 ? (
@@ -773,7 +773,7 @@ const Practice = () => {
                </button>
                
                {/* Detail Grid */}
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem' }}>
+               <div className="practice-detail-grid">
                   <div>
                      {/* Question area */}
                      <GlassCard style={{ padding: '2rem', marginBottom: '1.5rem' }}>
@@ -1015,8 +1015,8 @@ const Practice = () => {
                   </div>
 
                   {/* Sidebar Tip & Terminology */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                     <GlassCard style={{ padding: '1.5rem' }}>
+                  <div className="practice-detail-sidebar">
+                     <GlassCard className="practice-sidebar-card" style={{ padding: '1.5rem' }}>
                         <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
                           <Info size={18} color="var(--accent-blue)" /> Akademik Not
                         </h4>
@@ -1027,7 +1027,7 @@ const Practice = () => {
                         </p>
                      </GlassCard>
 
-                     <GlassCard style={{ padding: '1.5rem' }}>
+                     <GlassCard className="practice-sidebar-card" style={{ padding: '1.5rem' }}>
                        <h4 style={{ marginBottom: '1rem', fontSize: '0.9rem', fontWeight: 700 }}><List size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} /> Terimler Sözlüğü</h4>
                        <div style={termBox}>
                          <strong>Nash Dengesi:</strong> Diğer oyuncuların stratejileri sabitken, hiçbir oyuncunun tek taraflı sapma teşvikinin olmadığı durum.

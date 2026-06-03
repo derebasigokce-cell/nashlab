@@ -235,3 +235,44 @@
     box-shadow: 0 4px 12px var(--accent-blue-glow);
   }
 }
+
+/* Practice page layouts */
+.practice-list-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 2rem;
+}
+
+.practice-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 2rem;
+}
+
+.practice-detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 400px;
+  min-width: 400px;
+  max-width: 400px;
+}
+
+.practice-sidebar-card {
+  width: 100% !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+}
+
+/* Responsive stacking for practice grids */
+@media (max-width: 1023px) {
+  .practice-list-grid, .practice-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .practice-detail-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
